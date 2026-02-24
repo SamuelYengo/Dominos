@@ -294,8 +294,8 @@ public class GameManager : MonoBehaviour
         if (val != v1 && val != v2)
             return;
 
-        /* UnityEngine.Vector3 pos = end.transform.position;
-         UnityEngine.Vector3 FakedomPosition = pos + offsetDir;
+        UnityEngine.Vector3 pos = end.transform.position;
+         //UnityEngine.Vector3 FakedomPosition = pos + offsetDir;
 
          float baseRotation = 0f;
 
@@ -316,9 +316,9 @@ public class GameManager : MonoBehaviour
 
          if (v1 == v2)
              baseRotation += 90f;
-
+        
          UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
-         */
+         
         // Determine placement orientation
         bool placingVertical = Mathf.Abs(offsetDir.y) > 0f;
 
@@ -331,19 +331,19 @@ public class GameManager : MonoBehaviour
         : (endIsVertical ? 0.5f : 1f); // horizontal placement uses end's width/2
 
         float newHalf = placingVertical ? 1f : 1f; // new domino length in placement direction is always 2 units total, so half = 1
-        asd
+        
         // Compute spacing
         float spacing = endHalf + newHalf;
 
         // Final offset from end domino center
-        Vector3 finalOffset = new Vector3(
+        UnityEngine.Vector3 finalOffset = new UnityEngine.Vector3(
         Mathf.Sign(offsetDir.x) * (placingVertical ? 0f : spacing),
         Mathf.Sign(offsetDir.y) * (placingVertical ? spacing : 0f),
         0f
         );
 
         // Position for the new domino
-        Vector3 FakedomPosition = end.transform.position + finalOffset;
+        UnityEngine.Vector3 FakedomPosition = end.transform.position + finalOffset;
 
 
         GameObject fakeDomObj = Instantiate(FakeObject, FakedomPosition, rotation);
