@@ -12,6 +12,7 @@ public enum directions
 
 public class DominoScript : MonoBehaviour
 {
+    public GameObject player;
     public GameObject side1;
     public GameObject side2;
     public TextMeshPro text1;
@@ -57,18 +58,18 @@ public class DominoScript : MonoBehaviour
 
     void OnMouseDown()
     {
-       // var playerScript = GetComponent<Player>();
-        //if (playerScript.dominos.Contains(this.gameObject))
-        //{
+       /*GameObject playerScript = GetComponent<Player>();
+       if (playerScript.dominos.Contains(this.gameObject))
+       {
             Debug.Log("clicked: " + this);
             ClearFakeDoms();
 
             gameManager.CheckValidMoves(this);
-        //}
-        //else
-       // {
-        //Debug.Log("This domino is NOT in the player's hand. Cannot play it.");
-        //}
+       }
+       else
+       {
+        Debug.Log("This domino is not in the player's hand");
+        } */
 
 
     }
