@@ -331,7 +331,7 @@ public class GameManager : MonoBehaviour
         : (endIsVertical ? 0.5f : 1f); // horizontal placement uses end's width/2
 
         float newHalf = placingVertical ? 1f : 1f; // new domino length in placement direction is always 2 units total, so half = 1
-
+        asd
         // Compute spacing
         float spacing = endHalf + newHalf;
 
