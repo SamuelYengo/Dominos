@@ -34,13 +34,14 @@ public class DominoScript : MonoBehaviour
     }
 
     // New Setup function called immediately after Instantiate
-    public void Setup(float v1, float v2)
+    public void Setup(float v1, float v2, GameObject player )
     {
         side1Value = v1;
         side2Value = v2;
 
         text1.text = "" + side1Value;
         text2.text = "" + side2Value;
+        this.player = player;
     }
 
     void Update()
@@ -58,8 +59,8 @@ public class DominoScript : MonoBehaviour
 
     void OnMouseDown()
     {
-       /*GameObject playerScript = GetComponent<Player>();
-       if (playerScript.dominos.Contains(this.gameObject))
+       //GameObject player = GetComponent<Player>();
+       if (player.GetComponent<Player>().dominos.Contains(this.gameObject))
        {
             Debug.Log("clicked: " + this);
             ClearFakeDoms();
@@ -69,7 +70,7 @@ public class DominoScript : MonoBehaviour
        else
        {
         Debug.Log("This domino is not in the player's hand");
-        } */
+        } 
 
 
     }

@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
             dominoVectorsList.RemoveAt(randomIndex);
 
             // 4. Initialize the script immediately so values are ready for checking
-            dominoScript.Setup(randomDomino.X, randomDomino.Y);
+            dominoScript.Setup(randomDomino.X, randomDomino.Y, player);
         }
     }
 
