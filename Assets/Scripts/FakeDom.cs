@@ -10,7 +10,7 @@ public class FakeDom : MonoBehaviour
     public TextMeshPro text1;
     public TextMeshPro text2;
     public GameManager gameManager;
-    public GameObject end;
+    public int endIndex;
 
     public float FDside1Value;
     public float FDside2Value;
@@ -23,7 +23,7 @@ public class FakeDom : MonoBehaviour
     {
         gameManager = FindFirstObjectByType<GameManager>();
     }
-    public void setup(float v1, float v2, GameObject player, GameObject ogDom)
+    public void setup(float v1, float v2, GameObject player, GameObject ogDom, int endIndex)
     {
         FDside1Value = v1;
         FDside2Value = v2;
@@ -34,6 +34,7 @@ public class FakeDom : MonoBehaviour
         text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         this.player = player;
         this.ogDomino = ogDom;
+        this.endIndex = endIndex;
     }
 
     // Update is called once per frame
@@ -50,8 +51,8 @@ public class FakeDom : MonoBehaviour
         ogDomino.GetComponent<DominoScript>().text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         player.GetComponent<Player>().dominos.Remove(ogDomino);
         ogDomino.GetComponent<DominoScript>().ClearFakeDoms();
+        gameManager.Ends[endIndex] = ogDomino;
         gameManager.nextPlayerTurn();
-
 
 
     }

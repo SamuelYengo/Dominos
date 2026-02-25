@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
         //makeFakeDom(v1, v2, rightEnd, rval, false, new UnityEngine.Vector3(2f, 0f,0f));
-        makeFakeDom(v1, v2, rightEnd, rval, new UnityEngine.Vector3(2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, rightEnd, 0, rval, new UnityEngine.Vector3(2f, 0f, 0f), domino);
 
         var LeftEnd = Ends[1].GetComponent<DominoScript>();
 
@@ -228,7 +228,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
         //makeFakeDom(v1, v2, LeftEnd, lval, false, new UnityEngine.Vector3(-2f, 0f, 0f));
-        makeFakeDom(v1, v2, LeftEnd, lval, new UnityEngine.Vector3(-2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, LeftEnd, 1, lval, new UnityEngine.Vector3(-2f, 0f, 0f), domino);
 
         var UpEnd = Ends[2].GetComponent<DominoScript>();
         float Uval = -1;
@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
         //makeFakeDom(v1, v2, UpEnd, Uval, true, new UnityEngine.Vector3(0f, 2f, 0f));
-        makeFakeDom(v1, v2, UpEnd, Uval, new UnityEngine.Vector3(0f, 2f, 0f), domino);
+        makeFakeDom(v1, v2, UpEnd, 2, Uval, new UnityEngine.Vector3(0f, 2f, 0f), domino);
 
         var DownEnd = Ends[3].GetComponent<DominoScript>();
         float Dval = -1;
@@ -268,7 +268,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
         //makeFakeDom(v1, v2, DownEnd, Dval, true, new UnityEngine.Vector3(0f, -2f, 0f));
-        makeFakeDom(v1, v2, DownEnd, Dval, new UnityEngine.Vector3(0f, -2f, 0f), domino);
+        makeFakeDom(v1, v2, DownEnd, 3, Dval, new UnityEngine.Vector3(0f, -2f, 0f), domino);
 
 
 
@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void makeFakeDom(float v1, float v2, DominoScript end, float val, UnityEngine.Vector3 offsetDir, DominoScript domino)
+    public void makeFakeDom(float v1, float v2, DominoScript end, int index, float val, UnityEngine.Vector3 offsetDir, DominoScript domino)
     {
         if (val != v1 && val != v2)
             return;
@@ -348,7 +348,7 @@ public class GameManager : MonoBehaviour
 
 
         GameObject fakeDomObj = Instantiate(FakeObject, FakedomPosition, rotation);
-        fakeDomObj.GetComponent<FakeDom>().setup(v1, v2, domino.player, domino.gameObject);
+        fakeDomObj.GetComponent<FakeDom>().setup(v1, v2, domino.player, domino.gameObject, index);
     }
 
 }
