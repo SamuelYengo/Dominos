@@ -3,11 +3,14 @@ using TMPro;
 
 public class FakeDom : MonoBehaviour
 {
+    public GameObject player;
+    public GameObject ogDomino;
     public GameObject side1;
     public GameObject side2;
     public TextMeshPro text1;
     public TextMeshPro text2;
     public GameManager gameManager;
+    public GameObject end;
 
     public float FDside1Value;
     public float FDside2Value;
@@ -16,8 +19,11 @@ public class FakeDom : MonoBehaviour
     {
 
     }
-
-    public void setup(float v1, float v2)
+    void Awake()
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
+    public void setup(float v1, float v2, GameObject player, GameObject ogDom)
     {
         FDside1Value = v1;
         FDside2Value = v2;
@@ -26,7 +32,8 @@ public class FakeDom : MonoBehaviour
         
         text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-
+        this.player = player;
+        this.ogDomino = ogDom;
     }
 
     // Update is called once per frame
@@ -35,8 +42,17 @@ public class FakeDom : MonoBehaviour
 
     }
 
-    public void OnButtonClick()
+    public void OnMouseDown()
     {
-        // make real, remove from players hand
+        ogDomino.transform.position = this.transform.position;
+        ogDomino.transform.rotation = this.transform.rotation;
+        ogDomino.GetComponent<DominoScript>().text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        ogDomino.GetComponent<DominoScript>().text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        player.GetComponent<Player>().dominos.Remove(ogDomino);
+        ogDomino.GetComponent<DominoScript>().ClearFakeDoms();
+        gameManager.nextPlayerTurn();
+
+
+
     }
 }
