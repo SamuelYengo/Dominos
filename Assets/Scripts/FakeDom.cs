@@ -47,11 +47,16 @@ public class FakeDom : MonoBehaviour
     {
         ogDomino.transform.position = this.transform.position;
         ogDomino.transform.rotation = this.transform.rotation;
+
         ogDomino.GetComponent<DominoScript>().text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         ogDomino.GetComponent<DominoScript>().text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
         player.GetComponent<Player>().dominos.Remove(ogDomino);
+
         ogDomino.GetComponent<DominoScript>().ClearFakeDoms();
+
         gameManager.Ends[endIndex] = ogDomino;
+
         gameManager.nextPlayerTurn();
 
 

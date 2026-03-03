@@ -3,6 +3,12 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 
+/*TODOS
+    make a movable play area, and zoomable
+    should be behind player hand 
+    player hand dominos should be positioned dynamicly
+ 
+ */
 public class GameManager : MonoBehaviour
 {
     public System.Numerics.Vector2 Domino;
@@ -27,6 +33,7 @@ public class GameManager : MonoBehaviour
         RoundStart();
         Display();
     }
+    string lastEndsState = "";
 
     void Update()
     {
@@ -40,6 +47,22 @@ public class GameManager : MonoBehaviour
         else
         {
             EndGame();
+        }
+
+        PrintEndsIfChanged();
+    }
+    void PrintEndsIfChanged()
+    {
+        string currentState =
+            $"up: {Ends[2].GetComponent<DominoScript>().UpValue} | {Ends[2].GetComponent<DominoScript>().DownValue}, " +
+            $"down: {Ends[3].GetComponent<DominoScript>().UpValue} | {Ends[3].GetComponent<DominoScript>().DownValue}, " +
+            $"left: {Ends[1].GetComponent<DominoScript>().UpValue} | {Ends[1].GetComponent<DominoScript>().DownValue}, " +
+            $"right: {Ends[0].GetComponent<DominoScript>().UpValue} | {Ends[0].GetComponent<DominoScript>().DownValue}";
+
+        if (currentState != lastEndsState)
+        {
+            lastEndsState = currentState;
+            Debug.Log(currentState);
         }
     }
 
@@ -218,10 +241,10 @@ public class GameManager : MonoBehaviour
             case 0:
             case 90:
             case 270:
-                lval = LeftEnd.side2Value;
+                lval = LeftEnd.side1Value;
                 break;
             case 180:
-                lval = LeftEnd.side1Value;
+                lval = LeftEnd.side2Value;
                 break;
             default:
                 Debug.LogError("ahhhh");
@@ -236,11 +259,11 @@ public class GameManager : MonoBehaviour
         switch (Udir)
         {
             case 0:
-            case 90:
+            case 180:
             case 270:
                 Uval = UpEnd.side2Value;
                 break;
-            case 180:
+            case 90:
                 Uval = UpEnd.side1Value;
                 break;
             default:
@@ -256,11 +279,11 @@ public class GameManager : MonoBehaviour
         switch (Ddir)
         {
             case 0:
+            case 180:
             case 90:
-            case 270:
                 Dval = DownEnd.side2Value;
                 break;
-            case 180:
+            case 270:
                 Dval = DownEnd.side1Value;
                 break;
             default:

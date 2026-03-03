@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public enum directions
 {
+    right,
+    left,
     up,
     down,
-    left,
-    right
 }
 
 public class DominoScript : MonoBehaviour
