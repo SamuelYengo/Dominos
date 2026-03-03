@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /*TODOS
     make a movable play area, and zoomable
     should be behind player hand 
-    player hand dominos should be positioned dynamicly
+    player hand dominos should be positioned dynamicly - shift dmoinos in hand after placing one
  
  */
 public class GameManager : MonoBehaviour
@@ -120,9 +120,13 @@ public class GameManager : MonoBehaviour
             // Safety check in case we run out of dominos
             if (dominoVectorsList.Count == 0) break;
 
-            UnityEngine.Vector3 dominoPosition = player.transform.position + offset * i;
+            //UnityEngine.Vector3 dominoPosition = player.transform.position + offset * i;
 
-            GameObject newDomino = Instantiate(DominoObject, dominoPosition, transform.rotation);
+            //GameObject newDomino = Instantiate(DominoObject, dominoPosition, transform.rotation);
+            GameObject newDomino = Instantiate(DominoObject, PlayerHandTransform);
+            RectTransform rect = newDomino.GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(i * 100, 0); // spacing horizontally
+            rect.localScale = Vector3.one; // reset scale
             player.GetComponent<Player>().dominos.Add(newDomino);
 
             var dominoScript = newDomino.GetComponent<DominoScript>();
