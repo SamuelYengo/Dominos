@@ -188,7 +188,6 @@ GameObject:
   - component: {fileID: 7539857090078045711}
   - component: {fileID: 3037575874761458625}
   - component: {fileID: 5258580806518469707}
-  - component: {fileID: 2835280501931481536}
   m_Layer: 0
   m_Name: Domino
   m_TagString: Untagged
@@ -204,7 +203,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2763716608617379285}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.056286015}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -313,14 +312,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!222 &2835280501931481536
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2763716608617379285}
-  m_CullTransparentMesh: 1
 --- !u!1 &3151321125665960258
 GameObject:
   m_ObjectHideFlags: 0

@@ -120,13 +120,10 @@ public class GameManager : MonoBehaviour
             // Safety check in case we run out of dominos
             if (dominoVectorsList.Count == 0) break;
 
-            //UnityEngine.Vector3 dominoPosition = player.transform.position + offset * i;
+            UnityEngine.Vector3 dominoPosition = player.transform.position + offset * i;
 
-            //GameObject newDomino = Instantiate(DominoObject, dominoPosition, transform.rotation);
-            GameObject newDomino = Instantiate(DominoObject, PlayerHandTransform);
-            RectTransform rect = newDomino.GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(i * 100, 0); // spacing horizontally
-            rect.localScale = Vector3.one; // reset scale
+            GameObject newDomino = Instantiate(DominoObject, dominoPosition, transform.rotation);
+            
             player.GetComponent<Player>().dominos.Add(newDomino);
 
             var dominoScript = newDomino.GetComponent<DominoScript>();
