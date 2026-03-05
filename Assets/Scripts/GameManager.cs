@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
             UnityEngine.Vector3 dominoPosition = player.transform.position + offset * i;
 
             GameObject newDomino = Instantiate(DominoObject, dominoPosition, transform.rotation);
-            
+            newDomino.transform.SetParent(player.transform, true);
             player.GetComponent<Player>().dominos.Add(newDomino);
 
             var dominoScript = newDomino.GetComponent<DominoScript>();
@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour
                     // Logic to see if this is the double we want (currently accepts the first one found)
                     player.dominos.RemoveAt(j);
                     RootDomino = domino;
+                    RootDomino.transform.SetParent(player.transform, false);
 
                     //point ends to domino
                     Ends[0] = RootDomino;

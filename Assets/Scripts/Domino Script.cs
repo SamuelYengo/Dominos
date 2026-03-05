@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public enum directions
 {
@@ -24,7 +25,6 @@ public class DominoScript : MonoBehaviour
 
     public float UpValue;
     public float DownValue;
-
 
     public float direction;
 

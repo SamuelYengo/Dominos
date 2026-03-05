@@ -56,7 +56,7 @@ public class FakeDom : MonoBehaviour
         ogDomino.GetComponent<DominoScript>().ClearFakeDoms();
 
         gameManager.Ends[endIndex] = ogDomino;
-
+        ogDomino.transform.SetParent(player.transform, true);
         gameManager.nextPlayerTurn();
 
 
