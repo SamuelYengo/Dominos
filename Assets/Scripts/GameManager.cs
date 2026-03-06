@@ -51,6 +51,74 @@ public class GameManager : MonoBehaviour
 
         PrintEndsIfChanged();
     }
+    public float GetBoardEndTotal()
+    {
+        float total = 0;
+        HashSet<GameObject> counted = new HashSet<GameObject>();
+
+        for (int i = 0; i < Ends.Length; i++)
+        {
+            GameObject endObj = Ends[i];
+
+            if (endObj == null)
+                continue;
+
+            if (counted.Contains(endObj))
+                continue;
+
+            counted.Add(endObj);
+
+            var domino = endObj.GetComponent<DominoScript>();
+
+            int occurrences = 0;
+            for (int j = 0; j < Ends.Length; j++)
+            {
+                if (Ends[j] == endObj)
+                    occurrences++;
+            }
+
+            bool isDouble = domino.side1Value == domino.side2Value;
+
+            // If a double has exactly two connections, it's closed and shouldn't count
+            if (isDouble && occurrences == 2)
+                continue;
+
+            if (endObj == RootDomino)
+            {
+                total += domino.side1Value + domino.side2Value;
+            }
+            else
+            {
+                total += GetEndValue(endObj);
+            }
+        }
+
+        return total;
+    }
+
+    float GetEndValue(GameObject endObj)
+    {
+        if (endObj == null) return 0;
+
+        var end = endObj.GetComponent<DominoScript>();
+        int dir = Mathf.RoundToInt(end.direction);
+
+        switch (dir)
+        {
+            case 0:
+            case 90:
+            case 270:
+                return end.side2Value;
+
+            case 180:
+                return end.side1Value;
+
+            default:
+                Debug.LogError("Invalid direction");
+                return 0;
+        }
+    }
+
     void PrintEndsIfChanged()
     {
         string currentState =
@@ -176,7 +244,7 @@ public class GameManager : MonoBehaviour
                     // Logic to see if this is the double we want (currently accepts the first one found)
                     player.dominos.RemoveAt(j);
                     RootDomino = domino;
-                    RootDomino.transform.SetParent(player.transform, false);
+                    RootDomino.transform.SetParent(null, false);
 
                     //point ends to domino
                     Ends[0] = RootDomino;
