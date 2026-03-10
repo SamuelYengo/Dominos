@@ -46,6 +46,7 @@ public class FakeDom : MonoBehaviour
     public void OnMouseDown()
     {
         ogDomino.transform.SetParent(null, true);
+
         ogDomino.transform.position = this.transform.position;
         ogDomino.transform.rotation = this.transform.rotation;
 
@@ -58,8 +59,6 @@ public class FakeDom : MonoBehaviour
 
         gameManager.Ends[endIndex] = ogDomino;
 
-        float total = gameManager.GetBoardEndTotal();
-        Debug.Log("Board total: " + total);
 
         ogDomino.SetActive(true);
         gameManager.nextPlayerTurn();

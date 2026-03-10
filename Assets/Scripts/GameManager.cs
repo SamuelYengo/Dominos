@@ -2,13 +2,14 @@ using UnityEngine;
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+public enum Directions
+{
+    right,
+    left,
+    up,
+    down,
+}
 
-/*TODOS
-    make a movable play area, and zoomable
-    should be behind player hand 
-    player hand dominos should be positioned dynamicly - shift dmoinos in hand after placing one
- 
- */
 public class GameManager : MonoBehaviour
 {
     public System.Numerics.Vector2 Domino;
@@ -51,7 +52,7 @@ public class GameManager : MonoBehaviour
 
         PrintEndsIfChanged();
     }
-    public float GetBoardEndTotal()
+    public float GetBoardEndTotal(Directions dir)
     {
         float total = 0;
         HashSet<GameObject> counted = new HashSet<GameObject>();
@@ -89,34 +90,107 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                total += GetEndValue(endObj);
+                total += GetEndValue(endObj, dir);
             }
         }
-
         return total;
     }
 
-    float GetEndValue(GameObject endObj)
+    float GetEndValue(GameObject endObj, Directions dir)
     {
         if (endObj == null) return 0;
 
         var end = endObj.GetComponent<DominoScript>();
-        int dir = Mathf.RoundToInt(end.direction);
+        //int dir = Mathf.RoundToInt(end.direction);
 
         switch (dir)
+        {
+            case Directions.right:
+                return rightDirCases(endObj);
+            case Directions.left:
+                return leftDirCases(endObj);
+            case Directions.down:
+                return downDirCases(endObj);
+            case Directions.up:
+                return upDirCases(endObj);
+            default:
+                Debug.LogError("Invalid direction");
+                return 0;
+
+        }
+
+    }
+
+    float rightDirCases(GameObject endObj)
+    {
+        var rightEnd = Ends[0].GetComponent<DominoScript>();
+        int Rdir = Mathf.RoundToInt(rightEnd.direction);
+        switch (Rdir)
         {
             case 0:
             case 90:
             case 270:
-                return end.side2Value;
-
+                return endObj.GetComponent<DominoScript>().side2Value;
             case 180:
-                return end.side1Value;
-
+                return endObj.GetComponent<DominoScript>().side1Value;
             default:
-                Debug.LogError("Invalid direction");
-                return 0;
+                Debug.LogError("ahhhh");
+                return -1;
         }
+    }
+
+    float leftDirCases(GameObject endObj)
+    {
+        var LeftEnd = Ends[1].GetComponent<DominoScript>();
+        int Ldir = Mathf.RoundToInt(LeftEnd.direction);
+        switch (Ldir)
+        {
+            case 0:
+            case 90:
+            case 270:
+                return endObj.GetComponent<DominoScript>().side1Value;
+            case 180:
+                return endObj.GetComponent<DominoScript>().side2Value;
+            default:
+                Debug.LogError("ahhhh");
+                return -1;
+        }
+    }
+    float upDirCases(GameObject endObj)
+    {
+        var UpEnd = Ends[2].GetComponent<DominoScript>();
+        int Udir = Mathf.RoundToInt(UpEnd.direction);
+        switch (Udir)
+        {
+            case 0:
+            case 180:
+            case 270:
+                return endObj.GetComponent<DominoScript>().side2Value;
+            case 90:
+                return endObj.GetComponent<DominoScript>().side1Value;
+            default:
+                Debug.LogError("ahhhh");
+                return -1;
+        }
+
+    }
+    float downDirCases(GameObject endObj)
+    {
+        var DownEnd = Ends[3].GetComponent<DominoScript>();
+        int Ddir = Mathf.RoundToInt(DownEnd.direction);
+        switch (Ddir)
+        {
+            case 0:
+            case 180:
+            case 90:
+                return endObj.GetComponent<DominoScript>().side2Value;
+            case 270:
+                return endObj.GetComponent<DominoScript>().side1Value;
+            default:
+                Debug.LogError("ahhhh");
+                return -1;
+        }
+
     }
 
     void PrintEndsIfChanged()
@@ -150,7 +224,9 @@ public class GameManager : MonoBehaviour
         {
             playerWhosTurnItIsIndex = 0;
         }
+
         Display();
+      
     }
 
     void Display()
@@ -163,6 +239,7 @@ public class GameManager : MonoBehaviour
             RootDomino.SetActive(true);
             RootDomino.transform.position = new UnityEngine.Vector3(0, 0, 0);
         }
+
     }
 
     void PreRound()
