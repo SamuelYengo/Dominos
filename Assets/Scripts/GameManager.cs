@@ -220,7 +220,6 @@ public class GameManager : MonoBehaviour
             case 180:
             case 270:
                 return end.side2Value;
-
             case 90:
                 return end.side1Value;
 
@@ -526,7 +525,7 @@ public class GameManager : MonoBehaviour
          //UnityEngine.Vector3 FakedomPosition = pos + offsetDir;
 
          float baseRotation = 0f;
-
+        /*
          if (offsetDir == new UnityEngine.Vector3(2f, 0f, 0f))        
              baseRotation = 0f;
 
@@ -538,13 +537,26 @@ public class GameManager : MonoBehaviour
 
          else if (offsetDir == new UnityEngine.Vector3(0f, -2f, 0f))  
              baseRotation = 270f;
+        */
+        if (offsetDir.x > 0)
+            baseRotation = 0f;
 
-        /*if (val == v2)
-            baseRotation += 180f;
+        else if (offsetDir.x < 0)
+            baseRotation = 180f;
 
-        if (v1 == v2)
-            baseRotation += 90f;
-       */
+        else if (offsetDir.y > 0)
+            baseRotation = 90f;
+
+        else if (offsetDir.y < 0)
+            baseRotation = 270f;
+        /*
+       if (val == v2)
+           baseRotation += 180f;
+
+       if (v1 == v2)
+           baseRotation += 90f;
+      
+
         // Determine which side connects to the board
         bool side1Matches = (v1 == val);
         bool side2Matches = (v2 == val);
@@ -557,6 +569,20 @@ public class GameManager : MonoBehaviour
         else if (side1Matches && side2Matches)
         {
             // double
+            baseRotation += 90f;
+        }
+        */
+        bool isDouble = (v1 == v2);
+
+        if (!isDouble)
+        {
+            if (v2 == val)
+            {
+                baseRotation += 180f;
+            }
+        }
+        else
+        {
             baseRotation += 90f;
         }
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);

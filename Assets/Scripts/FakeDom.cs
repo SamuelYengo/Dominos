@@ -51,7 +51,15 @@ public class FakeDom : MonoBehaviour
         ogDomino.transform.rotation = this.transform.rotation;
 
         var dom = ogDomino.GetComponent<DominoScript>();
+        float rot = ogDomino.transform.eulerAngles.z;
 
+        // normalize rotation so it's always 0,90,180,270
+        rot = Mathf.Round(rot / 90f) * 90f;
+
+        dom.direction = rot;
+
+        dom.UpValue = dom.side1Value;
+        dom.DownValue = dom.side2Value;
         // Get the value we are connecting to BEFORE changing anything
         float connectedValue = -1;
 
@@ -72,7 +80,26 @@ public class FakeDom : MonoBehaviour
         dom.ClearFakeDoms();
 
         // update the board end
+
         gameManager.Ends[endIndex] = ogDomino;
+
+        float v1 = dom.side1Value;
+        float v2 = dom.side2Value;
+
+        // determine the new open value
+        float newOpenValue;
+
+        if (v1 == connectedValue)
+            newOpenValue = v2;
+        else
+            newOpenValue = v1;
+
+        // store the correct open value on the domino
+        dom.UpValue = newOpenValue;
+        // update the board end
+        gameManager.Ends[endIndex] = ogDomino;
+
+        // store correct open side values
 
         ogDomino.SetActive(true);
 
