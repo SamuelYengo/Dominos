@@ -52,51 +52,98 @@ public class GameManager : MonoBehaviour
 
         PrintEndsIfChanged();
     }
-    public float GetBoardEndTotal(Directions dir)
-    {
-        float total = 0;
-        HashSet<GameObject> counted = new HashSet<GameObject>();
+    /* public float GetBoardEndTotal(Directions dir)
+     {
+         float total = 0;
+         HashSet<GameObject> counted = new HashSet<GameObject>();
 
+         for (int i = 0; i < Ends.Length; i++)
+         {
+             GameObject endObj = Ends[i];
+
+             if (endObj == null)
+                 continue;
+
+             if (counted.Contains(endObj))
+                 continue;
+
+             counted.Add(endObj);
+
+             var domino = endObj.GetComponent<DominoScript>();
+
+             int occurrences = 0;
+             for (int j = 0; j < Ends.Length; j++)
+             {
+                 if (Ends[j] == endObj)
+                     occurrences++;
+             }
+
+             bool isDouble = domino.side1Value == domino.side2Value;
+
+             // If a double has exactly two connections, it's closed and shouldn't count
+             if (isDouble && occurrences == 2)
+                 continue;
+
+             if (endObj == RootDomino)
+             {
+                 total += domino.side1Value + domino.side2Value;
+             }
+             else
+             {
+                 total += GetEndValue(endObj, dir);
+             }
+         }
+         return total;
+     }
+    */
+    public float GetBoardEndTotal()
+    {
+        if (RootDomino == null)
+            return 0;
+
+        float total = 0;
+
+        // Count how many ends still point to the root domino
+        int rootOccurrences = 0;
         for (int i = 0; i < Ends.Length; i++)
         {
-            GameObject endObj = Ends[i];
-
-            if (endObj == null)
-                continue;
-
-            if (counted.Contains(endObj))
-                continue;
-
-            counted.Add(endObj);
-
-            var domino = endObj.GetComponent<DominoScript>();
-
-            int occurrences = 0;
-            for (int j = 0; j < Ends.Length; j++)
-            {
-                if (Ends[j] == endObj)
-                    occurrences++;
-            }
-
-            bool isDouble = domino.side1Value == domino.side2Value;
-
-            // If a double has exactly two connections, it's closed and shouldn't count
-            if (isDouble && occurrences == 2)
-                continue;
-
-            if (endObj == RootDomino)
-            {
-                total += domino.side1Value + domino.side2Value;
-            }
-            else
-            {
-                total += GetEndValue(endObj, dir);
-            }
+            if (Ends[i] == RootDomino)
+                rootOccurrences++;
         }
+
+        var root = RootDomino.GetComponent<DominoScript>();
+
+        // Root domino scoring
+        if (root.side1Value == root.side2Value) // it's a double
+        {
+            if (rootOccurrences >= 3)
+            {
+                // root still has open sides
+                total += root.side1Value + root.side2Value;
+            }
+            // if exactly 2 connections → closed → add nothing
+        }
+        else
+        {
+            total += root.side1Value + root.side2Value;
+        }
+
+        // Check each direction individually
+        if (Ends[0] != null && Ends[0] != RootDomino)
+            total += GetEndValue(Ends[0], Directions.right);
+
+        if (Ends[1] != null && Ends[1] != RootDomino)
+            total += GetEndValue(Ends[1], Directions.left);
+
+        if (Ends[2] != null && Ends[2] != RootDomino)
+            total += GetEndValue(Ends[2], Directions.up);
+
+        if (Ends[3] != null && Ends[3] != RootDomino)
+            total += GetEndValue(Ends[3], Directions.down);
+
         return total;
     }
-
-    float GetEndValue(GameObject endObj, Directions dir)
+    public float GetEndValue(GameObject endObj, Directions dir)
     {
         if (endObj == null) return 0;
 
@@ -123,74 +170,84 @@ public class GameManager : MonoBehaviour
 
     float rightDirCases(GameObject endObj)
     {
-        var rightEnd = Ends[0].GetComponent<DominoScript>();
-        int Rdir = Mathf.RoundToInt(rightEnd.direction);
-        switch (Rdir)
+        var end = endObj.GetComponent<DominoScript>();
+        int dir = Mathf.RoundToInt(end.direction);
+
+        switch (dir)
         {
             case 0:
             case 90:
             case 270:
-                return endObj.GetComponent<DominoScript>().side2Value;
+                return end.side2Value;
+
             case 180:
-                return endObj.GetComponent<DominoScript>().side1Value;
+                return end.side1Value;
+
             default:
-                Debug.LogError("ahhhh");
+                Debug.LogError("Invalid direction");
                 return -1;
         }
     }
 
     float leftDirCases(GameObject endObj)
     {
-        var LeftEnd = Ends[1].GetComponent<DominoScript>();
-        int Ldir = Mathf.RoundToInt(LeftEnd.direction);
-        switch (Ldir)
+        var end = endObj.GetComponent<DominoScript>();
+        int dir = Mathf.RoundToInt(end.direction);
+
+        switch (dir)
         {
             case 0:
             case 90:
             case 270:
-                return endObj.GetComponent<DominoScript>().side1Value;
+                return end.side1Value;
+
             case 180:
-                return endObj.GetComponent<DominoScript>().side2Value;
+                return end.side2Value;
+
             default:
-                Debug.LogError("ahhhh");
+                Debug.LogError("Invalid direction");
                 return -1;
         }
     }
     float upDirCases(GameObject endObj)
     {
-        var UpEnd = Ends[2].GetComponent<DominoScript>();
-        int Udir = Mathf.RoundToInt(UpEnd.direction);
-        switch (Udir)
+        var end = endObj.GetComponent<DominoScript>();
+        int dir = Mathf.RoundToInt(end.direction);
+
+        switch (dir)
         {
             case 0:
             case 180:
             case 270:
-                return endObj.GetComponent<DominoScript>().side2Value;
+                return end.side2Value;
+
             case 90:
-                return endObj.GetComponent<DominoScript>().side1Value;
+                return end.side1Value;
+
             default:
-                Debug.LogError("ahhhh");
+                Debug.LogError("Invalid direction");
                 return -1;
         }
-
     }
     float downDirCases(GameObject endObj)
     {
-        var DownEnd = Ends[3].GetComponent<DominoScript>();
-        int Ddir = Mathf.RoundToInt(DownEnd.direction);
-        switch (Ddir)
+        var end = endObj.GetComponent<DominoScript>();
+        int dir = Mathf.RoundToInt(end.direction);
+
+        switch (dir)
         {
             case 0:
             case 180:
             case 90:
-                return endObj.GetComponent<DominoScript>().side2Value;
+                return end.side2Value;
+
             case 270:
-                return endObj.GetComponent<DominoScript>().side1Value;
+                return end.side1Value;
+
             default:
-                Debug.LogError("ahhhh");
+                Debug.LogError("Invalid direction");
                 return -1;
         }
-
     }
 
     void PrintEndsIfChanged()
@@ -482,13 +539,27 @@ public class GameManager : MonoBehaviour
          else if (offsetDir == new UnityEngine.Vector3(0f, -2f, 0f))  
              baseRotation = 270f;
 
-         if (val == v2)
-             baseRotation += 180f;
+        /*if (val == v2)
+            baseRotation += 180f;
 
-         if (v1 == v2)
-             baseRotation += 90f;
-        
-         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
+        if (v1 == v2)
+            baseRotation += 90f;
+       */
+        // Determine which side connects to the board
+        bool side1Matches = (v1 == val);
+        bool side2Matches = (v2 == val);
+
+        // rotate so the matching side touches the board
+        if (side1Matches && !side2Matches)
+        {
+            baseRotation += 180f;
+        }
+        else if (side1Matches && side2Matches)
+        {
+            // double
+            baseRotation += 90f;
+        }
+        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
          
         // Determine placement orientation
         bool placingVertical = Mathf.Abs(offsetDir.y) > 0f;

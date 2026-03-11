@@ -50,19 +50,35 @@ public class FakeDom : MonoBehaviour
         ogDomino.transform.position = this.transform.position;
         ogDomino.transform.rotation = this.transform.rotation;
 
-        ogDomino.GetComponent<DominoScript>().text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        ogDomino.GetComponent<DominoScript>().text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        var dom = ogDomino.GetComponent<DominoScript>();
+
+        // Get the value we are connecting to BEFORE changing anything
+        float connectedValue = -1;
+
+        switch (endIndex)
+        {
+            case 0: connectedValue = gameManager.GetEndValue(gameManager.Ends[0], Directions.right); break;
+            case 1: connectedValue = gameManager.GetEndValue(gameManager.Ends[1], Directions.left); break;
+            case 2: connectedValue = gameManager.GetEndValue(gameManager.Ends[2], Directions.up); break;
+            case 3: connectedValue = gameManager.GetEndValue(gameManager.Ends[3], Directions.down); break;
+        }
+
+        dom.text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        dom.text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
         player.GetComponent<Player>().dominos.Remove(ogDomino);
 
-        ogDomino.GetComponent<DominoScript>().ClearFakeDoms();
+        // clear fake dominos AFTER we got the board data
+        dom.ClearFakeDoms();
 
+        // update the board end
         gameManager.Ends[endIndex] = ogDomino;
 
-
         ogDomino.SetActive(true);
+
+        float total = gameManager.GetBoardEndTotal();
+        Debug.Log("Board total = " + total);
+
         gameManager.nextPlayerTurn();
-
-
     }
 }
