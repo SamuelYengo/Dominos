@@ -178,10 +178,10 @@ public class GameManager : MonoBehaviour
             case 0:
             case 90:
             case 270:
-                return end.side2Value;
+                return end.UpValue;
 
             case 180:
-                return end.side1Value;
+                return end.DownValue;
 
             default:
                 Debug.LogError("Invalid direction");
@@ -199,10 +199,10 @@ public class GameManager : MonoBehaviour
             case 0:
             case 90:
             case 270:
-                return end.side1Value;
+                return end.DownValue;
 
             case 180:
-                return end.side2Value;
+                return end.UpValue;
 
             default:
                 Debug.LogError("Invalid direction");
@@ -219,9 +219,9 @@ public class GameManager : MonoBehaviour
             case 0:
             case 180:
             case 270:
-                return end.side2Value;
+                return end.UpValue;
             case 90:
-                return end.side1Value;
+                return end.DownValue;
 
             default:
                 Debug.LogError("Invalid direction");
@@ -238,10 +238,10 @@ public class GameManager : MonoBehaviour
             case 0:
             case 180:
             case 90:
-                return end.side2Value;
+                return end.UpValue;
 
             case 270:
-                return end.side1Value;
+                return end.DownValue;
 
             default:
                 Debug.LogError("Invalid direction");
