@@ -3,6 +3,7 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 using Directions = DominoScript.Directions;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -346,88 +347,106 @@ string currentState =
         var rightEnd = Ends[0].GetComponent<DominoScript>();
         int Rdir = Mathf.RoundToInt(rightEnd.direction);
         float rval = (Rdir == 180) ? rightEnd.side1Value : rightEnd.side2Value;
-        makeFakeDom(v1, v2, rightEnd, 0, rval, new UnityEngine.Vector3(2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, rightEnd, 0, rval, Directions.right, domino);
 
         var LeftEnd = Ends[1].GetComponent<DominoScript>();
         int Ldir = Mathf.RoundToInt(LeftEnd.direction);
         float lval = (Ldir == 180) ? LeftEnd.side2Value : LeftEnd.side1Value;
-        makeFakeDom(v1, v2, LeftEnd, 1, lval, new UnityEngine.Vector3(-2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, LeftEnd, 1, lval, Directions.left, domino);
 
         var UpEnd = Ends[2].GetComponent<DominoScript>();
         int Udir = Mathf.RoundToInt(UpEnd.direction);
         float Uval = (Udir == 90) ? UpEnd.side1Value : UpEnd.side2Value;
-        makeFakeDom(v1, v2, UpEnd, 2, Uval, new UnityEngine.Vector3(0f, 2f, 0f), domino);
+        makeFakeDom(v1, v2, UpEnd, 2, Uval, Directions.up, domino);
 
         var DownEnd = Ends[3].GetComponent<DominoScript>();
         int Ddir = Mathf.RoundToInt(DownEnd.direction);
         float Dval = (Ddir == 270) ? DownEnd.side1Value : DownEnd.side2Value;
-        makeFakeDom(v1, v2, DownEnd, 3, Dval, new UnityEngine.Vector3(0f, -2f, 0f), domino);
+        makeFakeDom(v1, v2, DownEnd, 3, Dval, Directions.down, domino);
     }
 
-    public float getOffset(DominoScript end)
+
+    public void makeFakeDom(float v1, float v2, DominoScript end, int index, float val, Directions offsetDir, DominoScript domino)
+{
+ 
+    if (val != v1 && val != v2) { return; }
+    float baseRotation = 0f;
+        switch (offsetDir)
+        {
+            case Directions.right:
+                baseRotation = 0f;
+                break;
+            case Directions.left:
+                baseRotation = 180f;
+                break;
+            case Directions.up:
+                baseRotation = 90f;
+                break;
+            case Directions.down:
+                baseRotation = 270f;
+                break;
+            default:
+                break;
+        }
+    
+
+
+    // --- ADJUST ROTATION FOR DOMINO ORIENTATION ---
+    // Rotate domino so the matching side touches the board
+    bool isDouble = v1 == v2;
+
+    if (!isDouble)
     {
-        int dir = Mathf.RoundToInt(end.direction);
-        if (dir == 0 || dir == 180) return 2f;
-        if (dir == 90 || dir == 270) return 0.5f;
-        return -1f;
+        // If side2 matches the end value, flip the domino 180 degrees
+        if (v2 == val)
+            baseRotation += 180f;
     }
-
-    public void makeFakeDom(float v1, float v2, DominoScript end, int index, float val, UnityEngine.Vector3 offsetDir, DominoScript domino)
+    else
     {
-        if (val != v1 && val != v2) { return; }
+        // Doubles are rotated 90 degrees to show both sides
+        baseRotation += 90f;
+    }
+    
+    UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
 
-        UnityEngine.Vector3 pos = end.transform.position;
+    // --- CALCULATE POSITIONING ---
+    // Determine if placing horizontally or vertically
+    bool placingVertical = offsetDir == Directions.up || offsetDir == Directions.down;
 
-         float baseRotation = 0f;
-      
-        if (offsetDir.x > 0)
-            baseRotation = 0f;
+    // Check if the end domino on the board is vertical
+    bool endIsVertical = Mathf.Abs(end.transform.eulerAngles.z % 180f) > 1f;
 
-        else if (offsetDir.x < 0)
-            baseRotation = 180f;
-
-        else if (offsetDir.y > 0)
-            baseRotation = 90f;
-
-        else if (offsetDir.y < 0)
-            baseRotation = 270f;
-      
-        bool isDouble = v1 == v2;
-
-        if (!isDouble)
-        {
-            if (v2 == val)
-            {
-                baseRotation += 180f;
-            }
-        }
-        else
-        {
-            baseRotation += 90f;
-        }
-        UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
-         
-        bool placingVertical = Mathf.Abs(offsetDir.y) > 0f;
-
-        bool endIsVertical = Mathf.Abs(end.transform.eulerAngles.z % 180f) > 1f;
-
-        float endHalf = placingVertical
+    // Calculate half-length of end domino in placement direction
+    float endHalf = placingVertical
         ? (endIsVertical ? 1f : 0.5f) 
-        : (endIsVertical ? 0.5f : 1f); 
+        : (endIsVertical ? 0.5f : 1f);
 
-        float newHalf = placingVertical ? 1f : 1f; 
-        
+    // All dominos are 2 units long, so half-length is 1
+    float newHalf = 1f;
+
+        // Total spacing between centers
         float spacing = endHalf + newHalf;
 
-        UnityEngine.Vector3 finalOffset = new UnityEngine.Vector3(
-        Mathf.Sign(offsetDir.x) * (placingVertical ? 0f : spacing),
-        Mathf.Sign(offsetDir.y) * (placingVertical ? spacing : 0f),
+    // Calculate final offset position
+    UnityEngine.Vector2 dir = offsetDir switch
+    {
+        Directions.right => UnityEngine.Vector2.right,
+        Directions.left => UnityEngine.Vector2.left,
+        Directions.up => UnityEngine.Vector2.up,
+        Directions.down => UnityEngine.Vector2.down,
+        _ => UnityEngine.Vector2.zero
+    };
+    UnityEngine.Vector3 finalOffset = new UnityEngine.Vector3(
+        Mathf.Sign(dir.x) * (placingVertical ? 0f : spacing),
+        Mathf.Sign(dir.y) * (placingVertical ? spacing : 0f),
         0f
-        );
+    );
 
-        UnityEngine.Vector3 FakedomPosition = end.transform.position + finalOffset;
-        GameObject fakeDomObj = Instantiate(FakeObject, FakedomPosition, rotation);
-        fakeDomObj.GetComponent<FakeDom>().setup(v1, v2, domino.player, domino.gameObject, index);
-    }
+    UnityEngine.Vector3 FakedomPosition = end.transform.position + finalOffset;
+
+    // --- SPAWN FAKE DOMINO ---
+    GameObject fakeDomObj = Instantiate(FakeObject, FakedomPosition, rotation);
+    fakeDomObj.GetComponent<FakeDom>().setup(v1, v2, domino.player, domino.gameObject, index);
+}
 
 }

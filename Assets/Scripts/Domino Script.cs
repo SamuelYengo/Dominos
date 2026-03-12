@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using Unity.VisualScripting;
 
 
 
@@ -10,12 +11,13 @@ public class DominoScript : MonoBehaviour
 {
 
     public enum Directions
-{
-    right,
-    left,
-    up,
-    down,
-}
+    {
+        right,
+        left,
+        up,
+        down,
+
+    }
     public GameObject player;
     public GameObject side1;
     public GameObject side2;
@@ -97,9 +99,20 @@ public class DominoScript : MonoBehaviour
             return side1Value;
         }
     }
-    
+
     public override string ToString()
     {
         return $"{side1Value} | {side2Value}";
     }
+    public static float GetDirectionOffset(Directions dir)
+{
+    return dir switch
+    {
+        Directions.right => 2f,
+        Directions.left => -2f,
+        Directions.up => 0f,
+        Directions.down => 0f,
+        _ => -1f
+    };
+}
 }
