@@ -43,9 +43,9 @@ public class FakeDom : MonoBehaviour
 
     }
 
-    public void OnMouseDown()
-    {
-        ogDomino.transform.SetParent(null, true);
+   // public void OnMouseDown()
+   // {
+       /* ogDomino.transform.SetParent(null, true);
 
         ogDomino.transform.position = this.transform.position;
         ogDomino.transform.rotation = this.transform.rotation;
@@ -69,8 +69,6 @@ public class FakeDom : MonoBehaviour
             case 3: connectedValue = gameManager.GetEndValue(gameManager.Ends[3], Directions.down); break;
         }
 
-        dom.text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        dom.text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
         player.GetComponent<Player>().dominos.Remove(ogDomino);
 
@@ -102,5 +100,35 @@ public class FakeDom : MonoBehaviour
         Debug.Log("Board total = " + total);
 
         gameManager.nextPlayerTurn();
+       */
+       public void OnMouseDown()
+    {
+        ogDomino.transform.SetParent(null, true);
+        ogDomino.transform.position = this.transform.position;
+        ogDomino.transform.rotation = this.transform.rotation;
+
+
+        var dom = ogDomino.GetComponent<DominoScript>();
+        dom.text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        dom.text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        // 1. Remove from hand
+        player.GetComponent<Player>().dominos.Remove(ogDomino);
+        dom.ClearFakeDoms();
+
+        // 2. Update the Board Ends array
+        // This is crucial: the domino we just placed IS now the new end for that direction
+        gameManager.Ends[endIndex] = ogDomino;
+
+        // 3. Force an update of the internal values (UpValue/DownValue)
+        // Your DominoScript.Update() handles the Up/Down values based on position,
+        // but we should ensure the object is active so Update runs.
+        ogDomino.SetActive(true);
+
+        // 4. Calculate Score
+        float total = gameManager.GetBoardEndTotal();
+        Debug.Log("Board total = " + total);
+
+        gameManager.nextPlayerTurn();
     }
 }
+

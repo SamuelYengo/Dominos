@@ -82,7 +82,34 @@ public class DominoScript : MonoBehaviour
             Destroy(FakeDom);
         }
     }
+    // Inside DominoScript.cs
+    public float GetOpenValue(Directions boardDir)
+    {
+        // If it's a double, both sides are the same, so just return the value immediately.
+        if (side1Value == side2Value)
+        {
+            return side1Value;
+        }
 
-   
+        // Horizontal check
+        if (boardDir == Directions.right || boardDir == Directions.left)
+        {
+            if (side1.transform.position.x > side2.transform.position.x)
+                return (boardDir == Directions.right) ? side1Value : side2Value;
+            else
+                return (boardDir == Directions.right) ? side2Value : side1Value;
+        }
+
+        // Vertical check
+        if (boardDir == Directions.up || boardDir == Directions.down)
+        {
+            if (side1.transform.position.y > side2.transform.position.y)
+                return (boardDir == Directions.up) ? side1Value : side2Value;
+            else
+                return (boardDir == Directions.up) ? side2Value : side1Value;
+        }
+
+        return -1; // Should never happen
+    }
 
 }
