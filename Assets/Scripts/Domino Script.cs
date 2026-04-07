@@ -2,14 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
-public enum directions
-{
-    right,
-    left,
-    up,
-    down,
-}
+using System;
 
 public class DominoScript : MonoBehaviour
 {
@@ -23,8 +16,7 @@ public class DominoScript : MonoBehaviour
     public float side1Value;
     public float side2Value;
 
-    public float UpValue;
-    public float DownValue;
+
 
     public float direction;
 
@@ -46,23 +38,15 @@ public class DominoScript : MonoBehaviour
 
     void Update()
     {
-        if (side1.transform.position.y > side2.transform.position.y) 
-        {
-            UpValue = side1Value;
-            DownValue = side2Value;
-        } else
-        {
-            UpValue = side2Value;
-            DownValue = side1Value;
-        }
+   
     }
 
     void OnMouseDown()
     {
-       //GameObject player = GetComponent<Player>();
+      
        if (player.GetComponent<Player>().dominos.Contains(this.gameObject))
        {
-            Debug.Log("clicked: " + this);
+            Debug.Log("dom clicked: " + this);
             ClearFakeDoms();
 
             gameManager.CheckValidMoves(this);
@@ -91,7 +75,6 @@ public class DominoScript : MonoBehaviour
             return side1Value;
         }
 
-        // Horizontal check
         if (boardDir == Directions.right || boardDir == Directions.left)
         {
             if (side1.transform.position.x > side2.transform.position.x)
@@ -100,7 +83,6 @@ public class DominoScript : MonoBehaviour
                 return (boardDir == Directions.right) ? side2Value : side1Value;
         }
 
-        // Vertical check
         if (boardDir == Directions.up || boardDir == Directions.down)
         {
             if (side1.transform.position.y > side2.transform.position.y)
@@ -109,7 +91,46 @@ public class DominoScript : MonoBehaviour
                 return (boardDir == Directions.up) ? side2Value : side1Value;
         }
 
-        return -1; // Should never happen
+        return -1;
     }
 
+    public float getUpValue()
+    {
+        if (side1.transform.position.y > side2.transform.position.y)
+        {
+            return side1Value;
+        }
+        else
+        {
+            return side2Value;
+        }
+    }
+
+    public float getDownValue()
+    {
+        if (side1.transform.position.y > side2.transform.position.y)
+        {
+            return side2Value;
+        }
+        else
+        {
+            return side1Value;
+        }
+    }
+
+    public override string ToString()
+    {
+        return $"{side1Value} | {side2Value}";
+    }
+    public static float GetDirectionOffset(Directions dir)
+{
+    return dir switch
+    {
+        Directions.right => 2f,
+        Directions.left => -2f,
+        Directions.up => 0f,
+        Directions.down => 0f,
+        _ => -1f
+    };
+}
 }

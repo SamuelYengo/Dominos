@@ -14,7 +14,6 @@ public class FakeDom : MonoBehaviour
 
     public float FDside1Value;
     public float FDside2Value;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
@@ -53,12 +52,10 @@ public class FakeDom : MonoBehaviour
         var dom = ogDomino.GetComponent<DominoScript>();
         float rot = ogDomino.transform.eulerAngles.z;
 
-        // normalize rotation so it's always 0,90,180,270
         rot = Mathf.Round(rot / 90f) * 90f;
 
         dom.direction = rot;
 
-        // Get the value we are connecting to BEFORE changing anything
         float connectedValue = -1;
 
         switch (endIndex)
@@ -86,9 +83,7 @@ public class FakeDom : MonoBehaviour
         else
             newOpenValue = v1;
 
-        // store values so board logic reads correctly
-        dom.UpValue = newOpenValue;
-        dom.DownValue = connectedValue;
+
         // update the board end
         gameManager.Ends[endIndex] = ogDomino;
 
