@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 
 public enum Directions
 {
@@ -27,8 +29,13 @@ public class GameManager : MonoBehaviour
     public GameObject RootDomino;
     public GameObject[] Ends = new GameObject[4]; // 0: Right, 1: Left, 2: Up, 3: Down
 
+    public TextMeshPro yourteamText;
+    public TextMeshPro otherteamText;
+
     void Start()
     {
+        Team1Score = 0;
+        Team2Score = 0;
         PreRound();
         RoundStart();
         Display();
@@ -40,6 +47,17 @@ public class GameManager : MonoBehaviour
         {
             EndGame();
         }
+        if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
+        {
+            yourteamText.text = "Your Team Has " + Team1Score + " points.";
+
+        }
+        else
+        {
+            otherteamText.text = "Your Team Has " + Team2Score + " points.";
+        }
+
+
     }
 
     // --- TURN LOGIC & VALIDATION ---
@@ -101,7 +119,7 @@ public class GameManager : MonoBehaviour
     {
         if (RootDomino == null) return 0;
 
-        float total = 0;
+        int total = 0;
         int rootOccurrences = 0;
 
         for (int i = 0; i < Ends.Length; i++)
@@ -125,7 +143,23 @@ public class GameManager : MonoBehaviour
         if (Ends[2] != null && Ends[2] != RootDomino) total += Ends[2].GetComponent<DominoScript>().GetOpenValue(Directions.up);
         if (Ends[3] != null && Ends[3] != RootDomino) total += Ends[3].GetComponent<DominoScript>().GetOpenValue(Directions.down);
 
+        if (total % 5==0)
+        {
+            if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
+            {
+                Team1Score += total;
+
+            }
+            else
+            {
+                Team2Score += total;
+            }
+        }
+
         return total;
+
+
+
     }
 
     public void CheckValidMoves(DominoScript domino)
@@ -199,7 +233,8 @@ public class GameManager : MonoBehaviour
                 dominoVectorsList.Add(new System.Numerics.Vector2((float)i, (float)j));
             }
         }
-    }
+
+}
 
     public void RoundStart()
     {
@@ -226,6 +261,7 @@ public class GameManager : MonoBehaviour
                     Ends[0] = Ends[1] = Ends[2] = Ends[3] = RootDomino;
                     playerWhosTurnItIsIndex = i;
                     rootFound = true;
+                    nextPlayerTurn();
                     break;
                 }
             }
@@ -246,7 +282,7 @@ public class GameManager : MonoBehaviour
             int randomIndex = UnityEngine.Random.Range(0, dominoVectorsList.Count);
             System.Numerics.Vector2 data = dominoVectorsList[randomIndex];
             dominoVectorsList.RemoveAt(randomIndex);
-            newDomino.GetComponent<DominoScript>().Setup(data.X, data.Y, player);
+            newDomino.GetComponent<DominoScript>().Setup((int)data.X, (int)data.Y, player);
         }
     }
 

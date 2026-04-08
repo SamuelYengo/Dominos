@@ -13,8 +13,8 @@ public class DominoScript : MonoBehaviour
     public TextMeshPro text2;
     public GameManager gameManager;
 
-    public float side1Value;
-    public float side2Value;
+    public int side1Value;
+    public int side2Value;
 
 
 
@@ -26,7 +26,7 @@ public class DominoScript : MonoBehaviour
     }
 
     // New Setup function called immediately after Instantiate
-    public void Setup(float v1, float v2, GameObject player )
+    public void Setup(int v1, int v2, GameObject player )
     {
         side1Value = v1;
         side2Value = v2;
@@ -67,7 +67,7 @@ public class DominoScript : MonoBehaviour
         }
     }
     // Inside DominoScript.cs
-    public float GetOpenValue(Directions boardDir)
+    public int GetOpenValue(Directions boardDir)
     {
         // If it's a double, both sides are the same, so just return the value immediately.
         if (side1Value == side2Value)

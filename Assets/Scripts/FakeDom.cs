@@ -41,61 +41,6 @@ public class FakeDom : MonoBehaviour
     {
 
     }
-
-   // public void OnMouseDown()
-   // {
-       /* ogDomino.transform.SetParent(null, true);
-
-        ogDomino.transform.position = this.transform.position;
-        ogDomino.transform.rotation = this.transform.rotation;
-
-        var dom = ogDomino.GetComponent<DominoScript>();
-        float rot = ogDomino.transform.eulerAngles.z;
-
-        rot = Mathf.Round(rot / 90f) * 90f;
-
-        dom.direction = rot;
-
-        float connectedValue = -1;
-
-        switch (endIndex)
-        {
-            case 0: connectedValue = gameManager.GetEndValue(gameManager.Ends[0], Directions.right); break;
-            case 1: connectedValue = gameManager.GetEndValue(gameManager.Ends[1], Directions.left); break;
-            case 2: connectedValue = gameManager.GetEndValue(gameManager.Ends[2], Directions.up); break;
-            case 3: connectedValue = gameManager.GetEndValue(gameManager.Ends[3], Directions.down); break;
-        }
-
-
-        player.GetComponent<Player>().dominos.Remove(ogDomino);
-
-        // clear fake dominos AFTER we got the board data
-        dom.ClearFakeDoms();
-
-        // update the board end
-        float v1 = dom.side1Value;
-        float v2 = dom.side2Value;
-
-        float newOpenValue;
-
-        if (v1 == connectedValue)
-            newOpenValue = v2;
-        else
-            newOpenValue = v1;
-
-
-        // update the board end
-        gameManager.Ends[endIndex] = ogDomino;
-
-        // store correct open side values
-
-        ogDomino.SetActive(true);
-
-        float total = gameManager.GetBoardEndTotal();
-        Debug.Log("Board total = " + total);
-
-        gameManager.nextPlayerTurn();
-       */
        public void OnMouseDown()
     {
         ogDomino.transform.SetParent(null, true);

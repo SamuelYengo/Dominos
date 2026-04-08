@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dominos: []
-  Teams: 0
+  Teams: 2
   gameManager: {fileID: 1385795401}
 --- !u!1 &249271361
 GameObject:
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dominos: []
-  Teams: 0
+  Teams: 1
   gameManager: {fileID: 1385795401}
 --- !u!4 &249271363
 Transform:
@@ -496,7 +496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dominos: []
-  Teams: 0
+  Teams: 1
   gameManager: {fileID: 1385795401}
 --- !u!1 &1056958262
 GameObject:
@@ -799,7 +799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dominos: []
-  Teams: 0
+  Teams: 2
   gameManager: {fileID: 1385795401}
 --- !u!4 &1852206654
 Transform:
