@@ -29,8 +29,8 @@ public class GameManager : MonoBehaviour
     public GameObject RootDomino;
     public GameObject[] Ends = new GameObject[4]; // 0: Right, 1: Left, 2: Up, 3: Down
 
-    public TextMeshPro yourteamText;
-    public TextMeshPro otherteamText;
+    public TextMeshProUGUI yourteamText;
+    public TextMeshProUGUI otherteamText;
 
     void Start()
     {
@@ -50,11 +50,12 @@ public class GameManager : MonoBehaviour
         if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
         {
             yourteamText.text = "Your Team Has " + Team1Score + " points.";
-
+            otherteamText.text = "Other Team Has " + Team2Score + " points.";
         }
         else
         {
-            otherteamText.text = "Your Team Has " + Team2Score + " points.";
+            yourteamText.text = "Your Team Has " + Team2Score + " points.";
+            otherteamText.text = "Other Team Has " + Team1Score + " points.";
         }
 
 
@@ -64,6 +65,19 @@ public class GameManager : MonoBehaviour
 
     public void nextPlayerTurn()
     {
+
+        // 1. Calculate and add score ONCE per turn
+        float moveScore = GetBoardEndTotal();
+        Debug.Log("Score for this move: " + moveScore);
+
+        Player currentPlayer = Players[playerWhosTurnItIsIndex].GetComponent<Player>();
+        if (currentPlayer.dominos.Count == 0)
+        {
+            Debug.Log($"Player {playerWhosTurnItIsIndex} emptied their hand! Round Over.");
+            AwardRemainingPoints(playerWhosTurnItIsIndex);
+            return; // Stop the turn cycle
+        }
+
         int playersChecked = 0;
 
         // Loop through players to find the next one who actually has a move
@@ -83,7 +97,7 @@ public class GameManager : MonoBehaviour
 
         // If we exit the loop, it means NO player in the game has a valid move
         Debug.Log("Game Blocked: No players have legal moves left.");
-        EndGame();
+        EndRoundBlocked();
     }
 
     public bool HasAnyValidMoves(GameObject player)
@@ -143,7 +157,7 @@ public class GameManager : MonoBehaviour
         if (Ends[2] != null && Ends[2] != RootDomino) total += Ends[2].GetComponent<DominoScript>().GetOpenValue(Directions.up);
         if (Ends[3] != null && Ends[3] != RootDomino) total += Ends[3].GetComponent<DominoScript>().GetOpenValue(Directions.down);
 
-        if (total % 5==0)
+        if (total % 5==0 && total > 0 )
         {
             if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
             {
@@ -261,6 +275,8 @@ public class GameManager : MonoBehaviour
                     Ends[0] = Ends[1] = Ends[2] = Ends[3] = RootDomino;
                     playerWhosTurnItIsIndex = i;
                     rootFound = true;
+                    
+                    Display();
                     nextPlayerTurn();
                     break;
                 }
@@ -285,12 +301,110 @@ public class GameManager : MonoBehaviour
             newDomino.GetComponent<DominoScript>().Setup((int)data.X, (int)data.Y, player);
         }
     }
+    public void AwardRemainingPoints(int winnerIndex)
+    {
+        int bonusPoints = 0;
 
+        // Loop through all players
+        for (int i = 0; i < Players.Length; i++)
+        {
+            // Skip the winner (their hand is empty anyway)
+            if (i == winnerIndex) continue;
+
+            List<GameObject> hand = Players[i].GetComponent<Player>().dominos;
+            foreach (GameObject domObj in hand)
+            {
+                DominoScript script = domObj.GetComponent<DominoScript>();
+                // Sum up both sides of the domino
+                bonusPoints += (int)(script.side1Value + script.side2Value);
+            }
+        }
+
+        // Round to the nearest 5 (standard Domino rules usually round)
+        // If you don't want to round, just remove the next line
+        bonusPoints = Mathf.RoundToInt(bonusPoints / 5f) * 5;
+
+        // Award to the correct team
+        if (winnerIndex == 0 || winnerIndex == 2)
+        {
+            Team1Score += bonusPoints;
+            Debug.Log("Team 1 wins round! Bonus: " + bonusPoints);
+        }
+        else
+        {
+            Team2Score += bonusPoints;
+            Debug.Log("Team 2 wins round! Bonus: " + bonusPoints);
+        }
+
+        Debug.Log("Round Over. Starting next round...");
+        ResetBoard();
+        RoundStart();
+    }
     void Display()
     {
         foreach (var player in Players) player.GetComponent<Player>().hideDominos();
         Players[playerWhosTurnItIsIndex].GetComponent<Player>().showDominos();
         if (RootDomino != null) RootDomino.SetActive(true);
+    }
+
+    void EndRoundBlocked()
+    {
+        int team1HandTotal = 0;
+        int team2HandTotal = 0;
+
+        // Calculate totals for both teams
+        for (int i = 0; i < Players.Length; i++)
+        {
+            int playerTotal = 0;
+            foreach (GameObject dom in Players[i].GetComponent<Player>().dominos)
+            {
+                var script = dom.GetComponent<DominoScript>();
+                playerTotal += (int)(script.side1Value + script.side2Value);
+            }
+
+            if (i == 0 || i == 2) team1HandTotal += playerTotal;
+            else team2HandTotal += playerTotal;
+        }
+
+        // Team with the LIGHTEST hand wins the points from the other team
+        if (team1HandTotal < team2HandTotal)
+        {
+            Team1Score += (Mathf.RoundToInt(team2HandTotal / 5f) * 5);
+        }
+        else if (team2HandTotal < team1HandTotal)
+        {
+            Team2Score += (Mathf.RoundToInt(team1HandTotal / 5f) * 5);
+        }
+
+        // Reset for next round...
+        ResetBoard();
+        RoundStart();
+    }
+    
+    public void ResetBoard()
+    {
+        // 1. Destroy EVERY object tagged as a Domino or Fake
+        GameObject[] allDominos = GameObject.FindGameObjectsWithTag("Domino");
+        foreach (GameObject d in allDominos) Destroy(d);
+
+        GameObject[] allFakes = GameObject.FindGameObjectsWithTag("FakeDom");
+        foreach (GameObject f in allFakes) Destroy(f);
+
+        // 2. Clear the Player lists (the physical objects are already destroyed above)
+        foreach (GameObject player in Players)
+        {
+            player.GetComponent<Player>().dominos.Clear();
+        }
+
+        // 3. Null out our tracking variables
+        RootDomino = null;
+        for (int i = 0; i < Ends.Length; i++)
+        {
+            Ends[i] = null;
+        }
+
+        // 4. Refresh the data list
+        PreRound();
     }
 
     void EndGame() { /* Handle scoring/reset here */ }

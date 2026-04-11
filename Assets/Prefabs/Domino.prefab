@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 5258580806518469707}
   m_Layer: 0
   m_Name: Domino
-  m_TagString: Untagged
+  m_TagString: Domino
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -236,8 +236,6 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   side1Value: 0
   side2Value: 0
-  UpValue: 0
-  DownValue: 0
   direction: 0
 --- !u!61 &3037575874761458625
 BoxCollider2D:

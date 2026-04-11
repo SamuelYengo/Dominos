@@ -65,8 +65,8 @@ public class FakeDom : MonoBehaviour
         ogDomino.SetActive(true);
 
         // 4. Calculate Score
-        float total = gameManager.GetBoardEndTotal();
-        Debug.Log("Board total = " + total);
+        //float total = gameManager.GetBoardEndTotal();
+        //Debug.Log("Board total = " + total);
 
         gameManager.nextPlayerTurn();
     }
