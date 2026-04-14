@@ -2,23 +2,24 @@ using UnityEngine;
 
 public class CamZoom : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Camera cam;
-    void Start(){
-        cam = GetComponent<Camera>();
-    }
 
-    // Update is called once per frame
+    private float zoomSpeed = 2f;
+    private float minSize = 2f;
+    private float maxSize = 10f;
+
+    void Start()
+    {
+        cam = GetComponent<Camera>();
+        if (cam.orthographicSize == 0) cam.orthographicSize = 5f;
+    }
     void Update()
     {
         float scroll = Input.mouseScrollDelta.y;
-        if (scroll > 0f)
+        if (scroll != 0)
         {
-
-        }
-        else if (scroll < 0f)
-        {
-
+            float newSize = cam.orthographicSize - (scroll * zoomSpeed);
+            cam.orthographicSize = Mathf.Clamp(newSize, minSize, maxSize);
         }
     }
 }

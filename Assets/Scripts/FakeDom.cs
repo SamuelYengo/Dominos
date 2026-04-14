@@ -51,23 +51,10 @@ public class FakeDom : MonoBehaviour
         var dom = ogDomino.GetComponent<DominoScript>();
         dom.text1.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         dom.text2.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        // 1. Remove from hand
         player.GetComponent<Player>().dominos.Remove(ogDomino);
         dom.ClearFakeDoms();
-
-        // 2. Update the Board Ends array
-        // This is crucial: the domino we just placed IS now the new end for that direction
         gameManager.Ends[endIndex] = ogDomino;
-
-        // 3. Force an update of the internal values (UpValue/DownValue)
-        // Your DominoScript.Update() handles the Up/Down values based on position,
-        // but we should ensure the object is active so Update runs.
         ogDomino.SetActive(true);
-
-        // 4. Calculate Score
-        //float total = gameManager.GetBoardEndTotal();
-        //Debug.Log("Board total = " + total);
-
         gameManager.nextPlayerTurn();
     }
 }

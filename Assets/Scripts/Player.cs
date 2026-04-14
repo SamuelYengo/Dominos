@@ -7,10 +7,24 @@ public class Player : MonoBehaviour
     public int Teams;
     public GameManager gameManager;
 
+    private Camera cam;
+    private Vector3 initialLocalPos;
+    private float defaultCamSize = 5f;
     void Start()
     {
+        cam = Camera.main;
+        initialLocalPos = transform.localPosition;
     }
 
+    void LateUpdate()
+    {
+        if (cam == null) return;
+
+
+        float ratio = cam.orthographicSize / defaultCamSize;
+        transform.localPosition = initialLocalPos * ratio;
+
+    }
     void Update()
     {
     }
