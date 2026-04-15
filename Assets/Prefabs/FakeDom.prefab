@@ -47,13 +47,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f58f427ec434164c8d13c5fbc573ac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  ogDomino: {fileID: 0}
   side1: {fileID: 7911973060985236442}
   side2: {fileID: 3581746793220831762}
   text1: {fileID: 1813675393864473830}
   text2: {fileID: 7221549701443996029}
   gameManager: {fileID: 0}
+  endIndex: 0
   FDside1Value: 0
   FDside2Value: 0
+  antiZoomHolder: {fileID: 2763716608617379285, guid: eaed83870a1a2bc4fb89b64e2a3629c1, type: 3}
 --- !u!61 &4834362707000323106
 BoxCollider2D:
   m_ObjectHideFlags: 0

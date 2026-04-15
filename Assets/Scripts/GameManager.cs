@@ -275,7 +275,13 @@ public class GameManager : MonoBehaviour
                     Ends[0] = Ends[1] = Ends[2] = Ends[3] = RootDomino;
                     playerWhosTurnItIsIndex = i;
                     rootFound = true;
-                    
+
+                    AntiZoom az = RootDomino.GetComponent<AntiZoom>();
+                    if (az != null)
+                    {
+                        az.enabled = false;
+                    }
+
                     Display();
                     nextPlayerTurn();
                     break;

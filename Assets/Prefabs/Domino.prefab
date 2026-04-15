@@ -323,6 +323,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 520fd349576228d40869123dc2868567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialCamSize: 5
+  initialLocalPos: {x: 0, y: 0, z: 0}
 --- !u!1 &3151321125665960258
 GameObject:
   m_ObjectHideFlags: 0

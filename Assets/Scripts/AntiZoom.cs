@@ -3,8 +3,8 @@ using UnityEngine;
 public class AntiZoom : MonoBehaviour
 {
     private Camera mainCam;
-    private float initialCamSize;
-    private Vector3 initialLocalPos;
+    public float initialCamSize;
+    public Vector3 initialLocalPos;
     private Vector3 initialScale;
 
     void Start()
@@ -27,6 +27,6 @@ public class AntiZoom : MonoBehaviour
 
         // 2. Maintain visual position relative to the camera frame
         // This stops them from sliding toward the center
-        transform.localPosition = initialLocalPos * zoomFactor;
+        //transform.localPosition = initialLocalPos * zoomFactor;
     }
 }
