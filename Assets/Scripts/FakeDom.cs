@@ -53,6 +53,7 @@ public class FakeDom : MonoBehaviour
         //ogDomino.transform.position = this.transform.position - startlocalPos;
         ogDomino.transform.position = spawnPos;
         ogDomino.transform.rotation = this.transform.rotation;
+        ogDomino.transform.localScale = this.transform.localScale;
 
         AntiZoom az = ogDomino.GetComponent<AntiZoom>();
         if (az != null)

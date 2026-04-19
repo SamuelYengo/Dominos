@@ -3,30 +3,33 @@ using UnityEngine;
 public class AntiZoom : MonoBehaviour
 {
     private Camera mainCam;
-    public float initialCamSize;
-    public Vector3 initialLocalPos;
-    private Vector3 initialScale;
+    private float initialCamSize;
+    private Vector3 initialLocalPos;
+
+    [Header("Size Settings")]
+    // Set this to the scale you want the object to ALWAYS be (e.g., 1, 1, 1)
+    public Vector3 targetScale = Vector3.one;
 
     void Start()
     {
         mainCam = Camera.main;
         initialCamSize = mainCam.orthographicSize;
+
+        // Record the buffer's starting position only
         initialLocalPos = transform.localPosition;
-        initialScale = transform.localScale;
     }
 
-    void LateUpdate() // Use LateUpdate to ensure it happens after Camera Zoom
+    void LateUpdate()
     {
         if (mainCam == null) return;
 
-        // Calculate how much the camera has scaled
         float zoomFactor = mainCam.orthographicSize / initialCamSize;
 
-        // 1. Maintain visual size
-        transform.localScale = initialScale * zoomFactor;
+        // 1. Force the scale to the Target Scale * zoomFactor
+        // This ignores any changes made by other scripts or interactions
+        transform.localScale = targetScale * zoomFactor;
 
-        // 2. Maintain visual position relative to the camera frame
-        // This stops them from sliding toward the center
-        //transform.localPosition = initialLocalPos * zoomFactor;
+        // 2. Counter-move the buffer
+        transform.localPosition = initialLocalPos * zoomFactor;
     }
 }
