@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     public TextMeshProUGUI yourteamText;
     public TextMeshProUGUI otherteamText;
+    public TextMeshProUGUI curPlayerText;
 
     void Start()
     {
@@ -57,7 +58,7 @@ public class GameManager : MonoBehaviour
             yourteamText.text = "Your Team Has " + Team2Score + " points.";
             otherteamText.text = "Other Team Has " + Team1Score + " points.";
         }
-
+        curPlayerText.text = "Player " + (playerWhosTurnItIsIndex + 1) + "s turn";
 
     }
 
