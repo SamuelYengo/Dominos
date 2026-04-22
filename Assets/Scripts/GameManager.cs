@@ -297,9 +297,28 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < howManyDominos; i++)
         {
             if (dominoVectorsList.Count == 0) break;
-            UnityEngine.Vector3 pos = player.transform.position + offset * i;
-            GameObject newDomino = Instantiate(DominoObject, pos, transform.rotation);
-            newDomino.transform.SetParent(player.transform, true);
+            //UnityEngine.Vector3 pos = player.transform.position + offset * i;
+            GameObject newDomino = Instantiate(DominoObject, player.transform.position, transform.rotation);
+            newDomino.transform.SetParent(player.transform);
+
+            // 2. Setup the "Desired" position (as if zoom was 1.0)
+            UnityEngine.Vector3 desiredLocalPos = offset * i;
+
+            // 3. Tell AntiZoom to take it from here
+            AntiZoom az = newDomino.GetComponent<AntiZoom>();
+            if (az != null)
+            {
+                // This is the magic: we pass the desired position to the script
+                // and let the script handle the zoom multiplication.
+                az.SetBasePosition(desiredLocalPos);
+            }
+            else
+            {
+                // Fallback if no script
+                newDomino.transform.localPosition = desiredLocalPos;
+            }
+            //GameObject newDomino = Instantiate(DominoObject, pos, transform.rotation);
+            //newDomino.transform.SetParent(player.transform, true);
             player.GetComponent<Player>().dominos.Add(newDomino);
 
             int randomIndex = UnityEngine.Random.Range(0, dominoVectorsList.Count);

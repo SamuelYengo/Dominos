@@ -2,47 +2,35 @@ using UnityEngine;
 
 public class AntiZoom : MonoBehaviour
 {
-    [Header("Global Settings")]
     public Vector3 fixedWorldScale = Vector3.one;
-
     private Camera mainCam;
     private static float referenceCamSize = -1f;
 
-    // This stores the 'Visual Distance' at the moment of placement
-    private Vector3 initialScreenOffset;
+    private Vector3 baseLocalPos; // The position at Zoom 1.0
+    private bool isInitialized = false;
 
-    void Start()
+    void Awake()
     {
         mainCam = Camera.main;
+        if (referenceCamSize < 0) referenceCamSize = mainCam.orthographicSize;
+    }
 
-        if (referenceCamSize < 0)
-        {
-            referenceCamSize = mainCam.orthographicSize;
-        }
-
-        // 1. Calculate the distance in World Space
-        Vector3 worldOffset = transform.position - transform.parent.position;
-
-        // 2. Normalize it: Divide by current zoom so we know the 'base' distance
-        float currentZoomRatio = mainCam.orthographicSize / referenceCamSize;
-        initialScreenOffset = worldOffset / currentZoomRatio;
-
-        MaintainScaleAndPos();
+    // Call this EVERY time the GameManager moves the domino in the hand
+    public void SetBasePosition(Vector3 targetLocalPos)
+    {
+        float zoomFactor = mainCam.orthographicSize / referenceCamSize;
+        // Divide by zoom to store the 'true' coordinate regardless of current zoom
+        baseLocalPos = targetLocalPos / zoomFactor;
+        isInitialized = true;
     }
 
     void LateUpdate()
     {
-        MaintainScaleAndPos();
-    }
-
-    void MaintainScaleAndPos()
-    {
-        if (mainCam == null || transform.parent == null) return;
+        if (transform.parent == null || !isInitialized) return;
 
         float zoomFactor = mainCam.orthographicSize / referenceCamSize;
 
-        // --- SCALE ---
-        // Lock the scale so it never looks bigger or smaller on screen
+        // Force scale to stay consistent
         Vector3 pScale = transform.parent.lossyScale;
         transform.localScale = new Vector3(
             (fixedWorldScale.x * zoomFactor) / pScale.x,
@@ -50,10 +38,7 @@ public class AntiZoom : MonoBehaviour
             (fixedWorldScale.z * zoomFactor) / pScale.z
         );
 
-        // --- POSITION ---
-        // This is the magic line. We force the domino to stay at the 
-        // original offset, scaled by the zoom, relative to the player.
-        // This prevents them from 'drifting' or 'squishing' during live zoom.
-        transform.position = transform.parent.position + (initialScreenOffset * zoomFactor);
+        // Force position to stay consistent
+        transform.localPosition = baseLocalPos * zoomFactor;
     }
 }
