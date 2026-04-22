@@ -199,13 +199,15 @@ public class GameManager : MonoBehaviour
     {
         if (val != v1 && val != v2) return;
 
+        // 1. Calculate Rotation based on direction
         float baseRotation = 0f;
-        if (offsetDir.x > 0) baseRotation = 0f;
-        else if (offsetDir.x < 0) baseRotation = 180f;
-        else if (offsetDir.y > 0) baseRotation = 90f;
-        else if (offsetDir.y < 0) baseRotation = 270f;
+        if (offsetDir.x > 0) baseRotation = 0f;      // Right
+        else if (offsetDir.x < 0) baseRotation = 180f; // Left
+        else if (offsetDir.y > 0) baseRotation = 90f;  // Up
+        else if (offsetDir.y < 0) baseRotation = 270f; // Down
 
         bool isDouble = (v1 == v2);
+        bool endIsDouble = (end.side1Value == end.side2Value);
 
         if (!isDouble)
         {
@@ -213,20 +215,50 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            // Doubles are placed cross-wise (rotated 90 degrees from the line)
             baseRotation += 90f;
         }
 
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
 
-        bool placingVertical = Mathf.Abs(offsetDir.y) > 0f;
-        bool endIsVertical = Mathf.Abs(end.transform.eulerAngles.z % 180f) > 1f;
+        // 2. Precision Spacing based on Direction and Double status
+        float endExtent = 0f;
+        float newExtent = 0f;
 
-        float endHalf = placingVertical ? (endIsVertical ? 1f : 0.5f) : (endIsVertical ? 0.5f : 1f);
-        float spacing = endHalf + 1f;
+        // Is the path horizontal (Left/Right) or vertical (Up/Down)?
+        bool isHorizontalPath = (index == 0 || index == 1);
 
+        // --- End Domino "Thickness" ---
+        if (endIsDouble)
+        {
+            // If the end is a double and we are on a horizontal path, it's vertical (thin side facing us)
+            // Unless it's the Root, but usually, doubles are always cross-wise.
+            endExtent = isHorizontalPath ? 0.5f : 1.0f;
+        }
+        else
+        {
+            // If the end is a normal domino and we are horizontal, it's lying long-ways
+            endExtent = isHorizontalPath ? 1.0f : 0.5f;
+        }
+
+        // --- New Domino "Thickness" ---
+        if (isDouble)
+        {
+            // If we are placing a double, it's always placed cross-wise
+            newExtent = isHorizontalPath ? 0.5f : 1.0f;
+        }
+        else
+        {
+            // If we are placing a normal domino, it follows the line
+            newExtent = isHorizontalPath ? 1.0f : 0.5f;
+        }
+
+        float spacing = endExtent + newExtent;
+
+        // 3. Final Position
         UnityEngine.Vector3 finalOffset = new UnityEngine.Vector3(
-            Mathf.Sign(offsetDir.x) * (placingVertical ? 0f : spacing),
-            Mathf.Sign(offsetDir.y) * (placingVertical ? spacing : 0f),
+            (offsetDir.x != 0) ? Mathf.Sign(offsetDir.x) * spacing : 0f,
+            (offsetDir.y != 0) ? Mathf.Sign(offsetDir.y) * spacing : 0f,
             0f
         );
 
