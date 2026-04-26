@@ -146,24 +146,39 @@ public class GameManager : MonoBehaviour
 
         if (root.side1Value == root.side2Value) // Double
         {
-            if (rootOccurrences >= 3) total += (root.side1Value + root.side2Value);
+            if (rootOccurrences >= 3) total += (int)(root.side1Value + root.side2Value);
         }
         else
         {
-            total += (root.side1Value + root.side2Value);
+            total += (int)(root.side1Value + root.side2Value);
         }
 
-        if (Ends[0] != null && Ends[0] != RootDomino) total += Ends[0].GetComponent<DominoScript>().GetOpenValue(Directions.right);
-        if (Ends[1] != null && Ends[1] != RootDomino) total += Ends[1].GetComponent<DominoScript>().GetOpenValue(Directions.left);
-        if (Ends[2] != null && Ends[2] != RootDomino) total += Ends[2].GetComponent<DominoScript>().GetOpenValue(Directions.up);
-        if (Ends[3] != null && Ends[3] != RootDomino) total += Ends[3].GetComponent<DominoScript>().GetOpenValue(Directions.down);
+        // --- NEW SCORING LOGIC FOR BOARD ENDS ---
+        for (int i = 0; i < 4; i++)
+        {
+            // Only score if the end is not empty and not the Root (Root is handled above)
+            if (Ends[i] != null && Ends[i] != RootDomino)
+            {
+                DominoScript script = Ends[i].GetComponent<DominoScript>();
 
-        if (total % 5==0 && total > 0 )
+                // If it's a double, count the sum of both sides (e.g., 5|5 = 10)
+                if (script.side1Value == script.side2Value)
+                {
+                    total += (int)(script.side1Value + script.side2Value);
+                }
+                // Otherwise, just count the open side facing outward
+                else
+                {
+                    total += (int)script.GetOpenValue((Directions)i);
+                }
+            }
+        }
+
+        if (total % 5 == 0 && total > 0)
         {
             if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
             {
                 Team1Score += total;
-
             }
             else
             {
@@ -172,9 +187,6 @@ public class GameManager : MonoBehaviour
         }
 
         return total;
-
-
-
     }
 
     public void CheckValidMoves(DominoScript domino)
@@ -182,17 +194,18 @@ public class GameManager : MonoBehaviour
         float v1 = domino.side1Value;
         float v2 = domino.side2Value;
 
+        // Use 1f as the multiplier since makeFakeDom now calculates the exact spacing
         float rval = Ends[0].GetComponent<DominoScript>().GetOpenValue(Directions.right);
-        makeFakeDom(v1, v2, Ends[0].GetComponent<DominoScript>(), 0, rval, new UnityEngine.Vector3(2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, Ends[0].GetComponent<DominoScript>(), 0, rval, new UnityEngine.Vector3(1f, 0f, 0f), domino);
 
         float lval = Ends[1].GetComponent<DominoScript>().GetOpenValue(Directions.left);
-        makeFakeDom(v1, v2, Ends[1].GetComponent<DominoScript>(), 1, lval, new UnityEngine.Vector3(-2f, 0f, 0f), domino);
+        makeFakeDom(v1, v2, Ends[1].GetComponent<DominoScript>(), 1, lval, new UnityEngine.Vector3(-1f, 0f, 0f), domino);
 
         float uval = Ends[2].GetComponent<DominoScript>().GetOpenValue(Directions.up);
-        makeFakeDom(v1, v2, Ends[2].GetComponent<DominoScript>(), 2, uval, new UnityEngine.Vector3(0f, 2f, 0f), domino);
+        makeFakeDom(v1, v2, Ends[2].GetComponent<DominoScript>(), 2, uval, new UnityEngine.Vector3(0f, 1f, 0f), domino);
 
         float dval = Ends[3].GetComponent<DominoScript>().GetOpenValue(Directions.down);
-        makeFakeDom(v1, v2, Ends[3].GetComponent<DominoScript>(), 3, dval, new UnityEngine.Vector3(0f, -2f, 0f), domino);
+        makeFakeDom(v1, v2, Ends[3].GetComponent<DominoScript>(), 3, dval, new UnityEngine.Vector3(0f, -1f, 0f), domino);
     }
 
     public void makeFakeDom(float v1, float v2, DominoScript end, int index, float val, UnityEngine.Vector3 offsetDir, DominoScript domino)
@@ -203,7 +216,7 @@ public class GameManager : MonoBehaviour
         float baseRotation = 0f;
         if (offsetDir.x > 0) baseRotation = 0f;      // Right
         else if (offsetDir.x < 0) baseRotation = 180f; // Left
-        else if (offsetDir.y > 0) baseRotation = 90f;  // Up
+        else if (offsetDir.y > 0) baseRotation = 90f;   // Up
         else if (offsetDir.y < 0) baseRotation = 270f; // Down
 
         bool isDouble = (v1 == v2);
@@ -221,49 +234,54 @@ public class GameManager : MonoBehaviour
 
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(0f, 0f, baseRotation);
 
-        // 2. Precision Spacing based on Direction and Double status
+        // 2. Precision Spacing Logic
         float endExtent = 0f;
         float newExtent = 0f;
-
-        // Is the path horizontal (Left/Right) or vertical (Up/Down)?
         bool isHorizontalPath = (index == 0 || index == 1);
 
-        // --- End Domino "Thickness" ---
-        if (endIsDouble)
+        // --- Calculate End Domino "Thickness" facing the connection ---
+        if (end.gameObject == RootDomino)
         {
-            // If the end is a double and we are on a horizontal path, it's vertical (thin side facing us)
-            // Unless it's the Root, but usually, doubles are always cross-wise.
-            endExtent = isHorizontalPath ? 0.5f : 1.0f;
-        }
-        else
-        {
-            // If the end is a normal domino and we are horizontal, it's lying long-ways
+            // Root is horizontal. 
+            // Distance to Left/Right edge is 1.0. Distance to Top/Bottom edge is 0.5.
             endExtent = isHorizontalPath ? 1.0f : 0.5f;
         }
-
-        // --- New Domino "Thickness" ---
-        if (isDouble)
+        else if (endIsDouble)
         {
-            // If we are placing a double, it's always placed cross-wise
-            newExtent = isHorizontalPath ? 0.5f : 1.0f;
+            // All other doubles are placed cross-wise, so thickness is always 0.5
+            endExtent = 0.5f;
         }
         else
         {
-            // If we are placing a normal domino, it follows the line
-            newExtent = isHorizontalPath ? 1.0f : 0.5f;
+            // Normal dominoes follow the line, so thickness is always 1.0
+            endExtent = 1.0f;
+        }
+
+        // --- Calculate New Domino "Thickness" facing the connection ---
+        if (isDouble)
+        {
+            // New double will be cross-wise (0.5)
+            newExtent = 0.5f;
+        }
+        else
+        {
+            // New normal will follow the line (1.0)
+            newExtent = 1.0f;
         }
 
         float spacing = endExtent + newExtent;
 
-        // 3. Final Position
+        // 3. Final Position Calculation
+        // Multiply the unit direction by our calculated spacing
         UnityEngine.Vector3 finalOffset = new UnityEngine.Vector3(
-            (offsetDir.x != 0) ? Mathf.Sign(offsetDir.x) * spacing : 0f,
-            (offsetDir.y != 0) ? Mathf.Sign(offsetDir.y) * spacing : 0f,
+            (offsetDir.x != 0) ? offsetDir.x * spacing : 0f,
+            (offsetDir.y != 0) ? offsetDir.y * spacing : 0f,
             0f
         );
 
         UnityEngine.Vector3 FakedomPosition = end.transform.position + finalOffset;
 
+        // 4. Instantiate
         GameObject fakeDomObj = Instantiate(FakeObject, FakedomPosition, rotation);
         fakeDomObj.GetComponent<FakeDom>().setup(v1, v2, domino.player, domino.gameObject, index);
     }
