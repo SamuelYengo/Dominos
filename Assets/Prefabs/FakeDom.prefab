@@ -57,7 +57,6 @@ MonoBehaviour:
   endIndex: 0
   FDside1Value: 0
   FDside2Value: 0
-  antiZoomHolder: {fileID: 2763716608617379285, guid: eaed83870a1a2bc4fb89b64e2a3629c1, type: 3}
 --- !u!61 &4834362707000323106
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -358,7 +357,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -7717450174661515925, guid: ddf256748c076df448339d6f91f2c526, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
   m_FlipX: 0
   m_FlipY: 0
@@ -644,7 +643,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 3858442786510194047, guid: 68c52ad312d504e47a345f46546065e0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
   m_FlipX: 0
   m_FlipY: 0
