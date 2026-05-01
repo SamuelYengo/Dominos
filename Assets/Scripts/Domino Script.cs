@@ -1,79 +1,72 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using System;
 
 public class DominoScript : MonoBehaviour
 {
+    [Header("References")]
     public GameObject player;
-    public GameObject side1;
-    public GameObject side2;
+    public GameObject side1; // The GameObject representing the first half
+    public GameObject side2; // The GameObject representing the second half
     public TextMeshPro text1;
     public TextMeshPro text2;
     public GameManager gameManager;
 
+    [Header("Data")]
     public int side1Value;
     public int side2Value;
 
-
-
-    public float direction;
-
     void Awake()
     {
+        // Automatically find the GameManager in the scene
         gameManager = FindFirstObjectByType<GameManager>();
     }
 
-    // New Setup function called immediately after Instantiate
-    public void Setup(int v1, int v2, GameObject player )
+    /// <summary>
+    /// Called by GameManager to initialize the domino's values and owner.
+    /// </summary>
+    public void Setup(int v1, int v2, GameObject playerOwner)
     {
         side1Value = v1;
         side2Value = v2;
 
-        text1.text = "" + side1Value;
-        text2.text = "" + side2Value;
-        this.player = player;
-    }
+        if (text1 != null) text1.text = side1Value.ToString();
+        if (text2 != null) text2.text = side2Value.ToString();
 
-    void Update()
-    {
-   
+        player = playerOwner;
     }
 
     void OnMouseDown()
     {
-      
-       if (player.GetComponent<Player>().dominos.Contains(this.gameObject))
-       {
-            Debug.Log("dom clicked: " + this);
+        // Only allow interaction if it's currently in a player's hand
+        if (player != null && player.GetComponent<Player>().dominos.Contains(this.gameObject))
+        {
+            Debug.Log("Domino clicked: " + this.ToString());
             ClearFakeDoms();
-
             gameManager.CheckValidMoves(this);
-       }
-       else
-       {
-        Debug.Log("This domino is not in the player's hand");
-        } 
-
-
+        }
+        else
+        {
+            Debug.Log("This domino is not in the player's hand or already played.");
+        }
     }
+
     public void ClearFakeDoms()
     {
-        var FakeDoms = GameObject.FindGameObjectsWithTag("FakeDom");
-        foreach (GameObject FakeDom in FakeDoms)
+        GameObject[] fakeDoms = GameObject.FindGameObjectsWithTag("FakeDom");
+        foreach (GameObject fake in fakeDoms)
         {
-            Destroy(FakeDom);
+            Destroy(fake);
         }
     }
-    // Inside DominoScript.cs
+
+    /// <summary>
+    /// Uses world position to determine which side of the domino is facing the "open" end of the board.
+    /// </summary>
     public int GetOpenValue(Directions boardDir)
     {
-        // If it's a double, both sides are the same, so just return the value immediately.
-        if (side1Value == side2Value)
-        {
-            return side1Value;
-        }
+        // If it's a double, both sides are the same
+        if (side1Value == side2Value) return side1Value;
 
         if (boardDir == Directions.right || boardDir == Directions.left)
         {
@@ -94,27 +87,59 @@ public class DominoScript : MonoBehaviour
         return -1;
     }
 
-    public float getUpValue()
+    /// <summary>
+    /// Highlights only the side of the domino that contributes to the board score.
+    /// </summary>
+    public void HighlightScoringSide(bool active, Color highlightColor, Directions boardDir)
     {
-        if (side1.transform.position.y > side2.transform.position.y)
+        // 1. Reset both sides to white (default)
+        SetObjectColor(side1, Color.white);
+        SetObjectColor(side2, Color.white);
+
+        if (!active) return;
+
+        // 2. If it's a double, the whole tile counts toward the score
+        if (side1Value == side2Value)
         {
-            return side1Value;
+            SetObjectColor(side1, highlightColor);
+            SetObjectColor(side2, highlightColor);
+            return;
         }
-        else
+
+        // 3. Find the "outer" GameObject based on the board direction
+        GameObject outerSide = null;
+
+        if (boardDir == Directions.right || boardDir == Directions.left)
         {
-            return side2Value;
+            if (side1.transform.position.x > side2.transform.position.x)
+                outerSide = (boardDir == Directions.right) ? side1 : side2;
+            else
+                outerSide = (boardDir == Directions.right) ? side2 : side1;
+        }
+        else if (boardDir == Directions.up || boardDir == Directions.down)
+        {
+            if (side1.transform.position.y > side2.transform.position.y)
+                outerSide = (boardDir == Directions.up) ? side1 : side2;
+            else
+                outerSide = (boardDir == Directions.up) ? side2 : side1;
+        }
+
+        // 4. Apply the color to the specific side found
+        if (outerSide != null)
+        {
+            SetObjectColor(outerSide, highlightColor);
         }
     }
 
-    public float getDownValue()
+    private void SetObjectColor(GameObject obj, Color c)
     {
-        if (side1.transform.position.y > side2.transform.position.y)
+        if (obj == null) return;
+
+        // Change color of the side renderer and any pips/children
+        SpriteRenderer[] renderers = obj.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var r in renderers)
         {
-            return side2Value;
-        }
-        else
-        {
-            return side1Value;
+            r.color = c;
         }
     }
 
@@ -122,15 +147,4 @@ public class DominoScript : MonoBehaviour
     {
         return $"{side1Value} | {side2Value}";
     }
-    public static float GetDirectionOffset(Directions dir)
-{
-    return dir switch
-    {
-        Directions.right => 2f,
-        Directions.left => -2f,
-        Directions.up => 0f,
-        Directions.down => 0f,
-        _ => -1f
-    };
-}
 }

@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI otherteamText;
     public TextMeshProUGUI curPlayerText;
 
+    public Color scoringEndColor = Color.yellow; // Customize this in the Inspector
+    private List<DominoScript> currentlyHighlighted = new List<DominoScript>();
     void Start()
     {
         Team1Score = 0;
@@ -132,57 +134,96 @@ public class GameManager : MonoBehaviour
 
     public float GetBoardEndTotal()
     {
+        // 1. CLEAR PREVIOUS HIGHLIGHTS
+        // We do this first so that dominoes that are no longer "ends" return to normal
+        foreach (var dom in currentlyHighlighted)
+        {
+            if (dom != null)
+            {
+                // Pass false and any direction to reset colors to white
+                dom.HighlightScoringSide(false, Color.white, Directions.right);
+            }
+        }
+        currentlyHighlighted.Clear();
+
         if (RootDomino == null) return 0;
 
         int total = 0;
         int rootOccurrences = 0;
 
+        // Count how many directions are currently attached to the root
         for (int i = 0; i < Ends.Length; i++)
         {
             if (Ends[i] == RootDomino) rootOccurrences++;
         }
 
-        var root = RootDomino.GetComponent<DominoScript>();
+        DominoScript rootScript = RootDomino.GetComponent<DominoScript>();
 
-        if (root.side1Value == root.side2Value) // Double
+        // 2. CALCULATE & HIGHLIGHT ROOT SCORE
+        bool rootIsScoring = false;
+        if (rootScript.side1Value == rootScript.side2Value) // Double
         {
-            if (rootOccurrences >= 3) total += (int)(root.side1Value + root.side2Value);
+            // In many rules, the root double only scores if it's still an open end (3+ sides open)
+            if (rootOccurrences >= 3)
+            {
+                total += (int)(rootScript.side1Value + rootScript.side2Value);
+                rootIsScoring = true;
+            }
         }
         else
         {
-            total += (int)(root.side1Value + root.side2Value);
+            // If the root isn't a double, it scores both sides initially
+            total += (int)(rootScript.side1Value + rootScript.side2Value);
+            rootIsScoring = true;
         }
 
-        // --- NEW SCORING LOGIC FOR BOARD ENDS ---
+        if (rootIsScoring)
+        {
+            // Root highlights both sides because both sides contribute to the initial score
+            rootScript.HighlightScoringSide(true, scoringEndColor, Directions.right);
+            currentlyHighlighted.Add(rootScript);
+        }
+
+        // 3. CALCULATE & HIGHLIGHT OTHER ENDS
         for (int i = 0; i < 4; i++)
         {
-            // Only score if the end is not empty and not the Root (Root is handled above)
+            // Only score if the end is not empty and not the Root (handled above)
             if (Ends[i] != null && Ends[i] != RootDomino)
             {
                 DominoScript script = Ends[i].GetComponent<DominoScript>();
+                Directions dir = (Directions)i;
 
-                // If it's a double, count the sum of both sides (e.g., 5|5 = 10)
+                // Highlight the side facing OUTward
+                script.HighlightScoringSide(true, scoringEndColor, dir);
+                currentlyHighlighted.Add(script);
+
+                // Calculation Logic
                 if (script.side1Value == script.side2Value)
                 {
+                    // Doubles count as the sum of both sides (e.g., 5|5 = 10)
                     total += (int)(script.side1Value + script.side2Value);
                 }
-                // Otherwise, just count the open side facing outward
                 else
                 {
-                    total += (int)script.GetOpenValue((Directions)i);
+                    // Normal dominoes only count the "open" value facing the board edge
+                    total += script.GetOpenValue(dir);
                 }
             }
         }
 
+        // 4. AWARD POINTS
+        // Only multiples of 5 score points in standard All-Fives rules
         if (total % 5 == 0 && total > 0)
         {
             if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
             {
                 Team1Score += total;
+                Debug.Log($"Team 1 scored {total} points!");
             }
             else
             {
                 Team2Score += total;
+                Debug.Log($"Team 2 scored {total} points!");
             }
         }
 
