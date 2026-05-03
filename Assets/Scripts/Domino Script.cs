@@ -16,10 +16,13 @@ public class DominoScript : MonoBehaviour
     public int side1Value;
     public int side2Value;
 
+    private AudioSource clickSound;
+
     void Awake()
     {
         // Automatically find the GameManager in the scene
         gameManager = FindFirstObjectByType<GameManager>();
+        clickSound = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -44,6 +47,7 @@ public class DominoScript : MonoBehaviour
             Debug.Log("Domino clicked: " + this.ToString());
             ClearFakeDoms();
             gameManager.CheckValidMoves(this);
+            clickSound.Play();
         }
         else
         {
