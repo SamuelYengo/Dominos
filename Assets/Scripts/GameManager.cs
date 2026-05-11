@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
 
     public Color scoringEndColor = Color.yellow; // Customize this in the Inspector
     private List<DominoScript> currentlyHighlighted = new List<DominoScript>();
+
+    private AudioSource scoreSound;
     void Start()
     {
         Team1Score = 0;
@@ -44,6 +46,10 @@ public class GameManager : MonoBehaviour
         Display();
     }
 
+    private void Awake()
+    {
+        scoreSound = GetComponent<AudioSource>();
+    }
     void Update()
     {
         if (Team1Score >= 610 || Team2Score >= 610)
@@ -218,11 +224,13 @@ public class GameManager : MonoBehaviour
             if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
             {
                 Team1Score += total;
+                scoreSound.Play();
                 Debug.Log($"Team 1 scored {total} points!");
             }
             else
             {
                 Team2Score += total;
+                scoreSound.Play();
                 Debug.Log($"Team 2 scored {total} points!");
             }
         }
