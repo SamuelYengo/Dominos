@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI yourteamText;
     public TextMeshProUGUI otherteamText;
     public TextMeshProUGUI curPlayerText;
+    public TextMeshProUGUI curTeamText;
 
     public Color scoringEndColor = Color.yellow; // Customize this in the Inspector
     private List<DominoScript> currentlyHighlighted = new List<DominoScript>();
@@ -56,16 +57,18 @@ public class GameManager : MonoBehaviour
         {
             EndGame();
         }
+            yourteamText.text = "Team 1 Has " + Team1Score + " points.";
+            otherteamText.text = "Team 2 Has " + Team2Score + " points.";
         if (playerWhosTurnItIsIndex == 0 || playerWhosTurnItIsIndex == 2)
         {
-            yourteamText.text = "Your Team Has " + Team1Score + " points.";
-            otherteamText.text = "Other Team Has " + Team2Score + " points.";
+            curTeamText.text = "Team 1";
         }
         else
         {
-            yourteamText.text = "Your Team Has " + Team2Score + " points.";
-            otherteamText.text = "Other Team Has " + Team1Score + " points.";
+            curTeamText.text = "Team 2";
         }
+        
+
         curPlayerText.text = "Player " + (playerWhosTurnItIsIndex + 1) + "s turn";
 
     }
