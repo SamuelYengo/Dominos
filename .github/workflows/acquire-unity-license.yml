@@ -1,0 +1,65 @@
+name: Acquire Unity License
+
+on:
+  workflow_dispatch:
+
+jobs:
+  acquire:
+    name: Generate UNITY_LICENSE
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create activation request
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            unityci/editor:ubuntu-6000.0.30f1-webgl-3 \
+            -batchmode -nographics -quit \
+            -logFile /workspace/activation.log \
+            -createManualActivationRequest \
+            -manualActivationFile /workspace/Unity.alf
+
+          if [ ! -f Unity.alf ]; then
+            echo "Failed to create Unity.alf"
+            tail -n 50 activation.log || true
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Activate license
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        shell: bash
+        run: |
+          npm install --global unity-license-activate
+          unity-license-activate "$UNITY_EMAIL" "$UNITY_PASSWORD" "Unity.alf"
+
+          if [ -z "${ULF_FILE:-}" ] || [ ! -f "$ULF_FILE" ]; then
+            echo "ULF_FILE was not created"
+            ls -la
+            exit 1
+          fi
+
+          cp "$ULF_FILE" Unity.ulf
+
+      - name: Upload license artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-license
+          path: Unity.ulf
+          if-no-files-found: error
+
+      - name: Upload error screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-error
+          path: error.png
+          if-no-files-found: ignore
