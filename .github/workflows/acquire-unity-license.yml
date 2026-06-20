@@ -13,13 +13,12 @@ jobs:
         shell: bash
         run: |
           docker run --rm \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
+            -v "${{ github.workspace }}:/github/workspace" \
             unityci/editor:ubuntu-6000.0.30f1-webgl-3 \
             -batchmode -nographics -quit \
-            -logFile /workspace/activation.log \
+            -logFile /github/workspace/activation.log \
             -createManualActivationRequest \
-            -manualActivationFile /workspace/Unity.alf
+            -manualActivationFile /github/workspace/Unity.alf
 
           if [ ! -f Unity.alf ]; then
             echo "Failed to create Unity.alf"
