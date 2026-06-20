@@ -1,0 +1,94 @@
+name: Build WebGL and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: webgl-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build WebGL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-WebGL-
+
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v5
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          unityVersion: 6000.0.30f1
+          targetPlatform: WebGL
+          buildMethod: WebGLBuild.Build
+          buildsPath: Build
+
+      - name: Add Pages fallback
+        shell: bash
+        run: cp Build/WebGL/index.html Build/WebGL/404.html
+
+      - name: Zip WebGL build
+        shell: bash
+        run: |
+          cd Build/WebGL
+          zip -r ../../dominos-webgl-${{ github.sha }}.zip .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dominos-webgl
+          path: Build/WebGL
+          if-no-files-found: error
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: Build/WebGL
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          tag="webgl-${{ github.run_number }}"
+          title="WebGL Build ${{ github.run_number }}"
+          notes="Automated WebGL build from ${{ github.repository }}@${{ github.sha }}"
+
+          gh release create "$tag" "dominos-webgl-${{ github.sha }}.zip" --title "$title" --notes "$notes" --latest
+
+  deploy:
+    name: Deploy GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
