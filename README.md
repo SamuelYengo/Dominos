@@ -10,4 +10,9 @@ The workflow:
 - deploys the WebGL output to GitHub Pages
 - creates a GitHub Release tagged `webgl-<run number>` with a zipped WebGL build
 
-Before the workflow can build, add a repository secret named `UNITY_LICENSE`.
+Before the workflow can build, activate a free Unity Personal license in Unity Hub.
+Then add these repository secrets:
+
+- `UNITY_LICENSE`: the contents of `C:\ProgramData\Unity\Unity_lic.ulf`
+- `UNITY_EMAIL`: the email address for your Unity account
+- `UNITY_PASSWORD`: the password for your Unity account
