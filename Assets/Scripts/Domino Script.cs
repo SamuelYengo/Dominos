@@ -17,12 +17,22 @@ public class DominoScript : MonoBehaviour
     public int side2Value;
 
     private AudioSource clickSound;
+    private Vector3 text1BaseScale = Vector3.one;
+    private Vector3 text2BaseScale = Vector3.one;
 
     void Awake()
     {
         // Automatically find the GameManager in the scene
         gameManager = FindFirstObjectByType<GameManager>();
         clickSound = GetComponent<AudioSource>();
+
+        if (text1 != null) text1BaseScale = text1.transform.localScale;
+        if (text2 != null) text2BaseScale = text2.transform.localScale;
+    }
+
+    void OnEnable()
+    {
+        RefreshText();
     }
 
     /// <summary>
@@ -33,10 +43,24 @@ public class DominoScript : MonoBehaviour
         side1Value = v1;
         side2Value = v2;
 
-        if (text1 != null) text1.text = side1Value.ToString();
-        if (text2 != null) text2.text = side2Value.ToString();
-
         player = playerOwner;
+        RefreshText();
+    }
+
+    public void RefreshText()
+    {
+        SetText(text1, side1Value, text1BaseScale);
+        SetText(text2, side2Value, text2BaseScale);
+    }
+
+    private void SetText(TextMeshPro text, int value, Vector3 baseScale)
+    {
+        if (text == null) return;
+
+        text.gameObject.SetActive(true);
+        text.transform.localScale = baseScale;
+        text.text = value.ToString();
+        text.ForceMeshUpdate(true, true);
     }
 
     void OnMouseDown()

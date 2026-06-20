@@ -472,7 +472,15 @@ public class GameManager : MonoBehaviour
     {
         foreach (var player in Players) player.GetComponent<Player>().hideDominos();
         Players[playerWhosTurnItIsIndex].GetComponent<Player>().showDominos();
-        if (RootDomino != null) RootDomino.SetActive(true);
+        if (RootDomino != null)
+        {
+            RootDomino.SetActive(true);
+            DominoScript rootScript = RootDomino.GetComponent<DominoScript>();
+            if (rootScript != null)
+            {
+                rootScript.RefreshText();
+            }
+        }
     }
 
     void EndRoundBlocked()

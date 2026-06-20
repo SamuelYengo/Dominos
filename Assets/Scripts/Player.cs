@@ -47,6 +47,11 @@ public class Player : MonoBehaviour
             if (domino != null)
             {
                 domino.SetActive(true);
+                DominoScript script = domino.GetComponent<DominoScript>();
+                if (script != null)
+                {
+                    script.RefreshText();
+                }
             }
         }
     }

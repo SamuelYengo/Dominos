@@ -1,6 +1,6 @@
 param(
     [string]$UnityPath = "C:\Program Files\Unity\Hub\Editor\6000.0.30f1\Editor\Unity.exe",
-    [string]$OutputPath = "docs"
+    [string]$OutputPath = "Builds"
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,9 +25,9 @@ $arguments = @(
     "-quit",
     "-batchmode",
     "-nographics",
-    "-projectPath", $repoRoot,
+    "-projectPath", "`"$repoRoot`"",
     "-executeMethod", "WebGLBuild.Build",
-    "-logFile", $logPath
+    "-logFile", "`"$logPath`""
 )
 
 $process = Start-Process `
