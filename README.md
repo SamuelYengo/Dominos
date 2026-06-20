@@ -1,18 +1,16 @@
 this is my domino game!
 
-## WebGL release build
+## Manual WebGL publish
 
-Pushes to `main` run `.github/workflows/webgl-release.yml`.
+Build the game locally into `docs/`, commit it, and push to `main`.
 
-The workflow:
+```powershell
+.\scripts\build-webgl.ps1
+git add docs
+git commit -m "publish webgl build"
+git push origin main
+```
 
-- builds the Unity project as WebGL using Unity `6000.0.30f1`
-- deploys the WebGL output to GitHub Pages
-- creates a GitHub Release tagged `webgl-<run number>` with a zipped WebGL build
+Then set GitHub Pages to serve from `main` / `docs`.
 
-Before the workflow can build, activate a free Unity Personal license in Unity Hub.
-Then add these repository secrets:
-
-- `UNITY_LICENSE`: the contents of `C:\ProgramData\Unity\Unity_lic.ulf`
-- `UNITY_EMAIL`: the email address for your Unity account
-- `UNITY_PASSWORD`: the password for your Unity account
+Unity still needs a free Personal license activated locally before the build can run.
