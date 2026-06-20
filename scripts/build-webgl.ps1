@@ -1,6 +1,6 @@
 param(
     [string]$UnityPath = "C:\Program Files\Unity\Hub\Editor\6000.0.30f1\Editor\Unity.exe",
-    [string]$OutputPath = "Builds"
+    [string]$OutputPath = "docs"
 )
 
 $ErrorActionPreference = "Stop"

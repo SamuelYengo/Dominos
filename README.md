@@ -1,27 +1,20 @@
 this is my domino game!
 
-## WebGL release build
+Play it here: https://samuelyengo.github.io/Dominos/
 
-Pushes to `main` run `.github/workflows/webgl-release.yml`.
+## Publish WebGL to GitHub Pages
 
-The workflow:
-
-- builds the Unity project as WebGL using Unity `6000.0.30f1`
-- deploys the WebGL output to GitHub Pages
-- creates a GitHub Release tagged `webgl-<run number>` with a zipped WebGL build
-
-Before the workflow can build, add these repository secrets in GitHub under Settings → Secrets and variables → Actions:
-
-- `UNITY_LICENSE`: the full contents of `C:\ProgramData\Unity\Unity_lic.ulf`
-- `UNITY_EMAIL`: your Unity account email
-- `UNITY_PASSWORD`: your Unity account password
-
-If you do not have a license file yet, run the `Unity Activation Request` workflow once, download the `.alf` file from the run artifacts, activate it in Unity Hub, then copy the generated `Unity_lic.ulf` into the `UNITY_LICENSE` secret.
-
-## Local WebGL build
+Build locally, copy to `docs/`, commit, and push:
 
 ```powershell
-.\scripts\build-webgl.ps1
+.\scripts\build-webgl.ps1 -OutputPath docs
+git add docs
+git commit -m "publish webgl build"
+git push origin main
 ```
 
-The local script writes to `Builds/`. Unity still needs a free Personal license activated locally before the build can run.
+Pushing `docs/` triggers `.github/workflows/deploy-pages.yml` and updates the live site.
+
+## Optional: build on GitHub Actions
+
+`.github/workflows/webgl-release.yml` can build in the cloud, but it needs `UNITY_LICENSE`, `UNITY_EMAIL`, and `UNITY_PASSWORD` repository secrets. Run it manually from the Actions tab once those are set.
